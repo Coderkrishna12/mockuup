@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Github, Twitter, Instagram, Youtube } from "lucide-react";
 
 const footerLinks = [
@@ -9,12 +10,10 @@ const footerLinks = [
 ];
 
 const socialLinks = [
-    { icon: Twitter, href: "https://twitter.com/marvel", label: "Twitter" },
-    { icon: Instagram, href: "https://instagram.com/marvel", label: "Instagram" },
-    { icon: Youtube, href: "https://youtube.com/marvel", label: "YouTube" },
-    { icon: Github, href: "#", label: "GitHub" },
+    { icon: Twitter, href: "https://x.com/Marvel", label: "Twitter" },
+    { icon: Instagram, href: "https://www.instagram.com/marvel/", label: "Instagram" },
+    { icon: Youtube, href: "https://www.youtube.com/@marvel", label: "YouTube" },
 ];
-
 export default function Footer() {
     return (
         <footer className="relative border-t border-white/5 bg-black/80 md:pb-0 pb-20">
@@ -25,17 +24,20 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Brand */}
                     <div>
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 bg-marvel-red rounded flex items-center justify-center font-heading text-sm text-white">
-                                M
-                            </div>
-                            <span className="font-heading text-xl tracking-wider text-white">
-                                MARVEL <span className="text-marvel-red">UNIVERSE</span>
+                        <div className="flex items-center gap-0 mb-4">
+                            <Image
+                                src="/logo.png"
+                                alt="Marvel"
+                                width={90}
+                                height={50}
+                                className="h-11 w-auto object-contain"
+                            />
+                            <span className="font-heading text-3xl tracking-wider text-white pt-1">
+                                <span className="text-marvel-red">UNIVERSE</span>
                             </span>
                         </div>
                         <p className="text-sm text-white/40 leading-relaxed max-w-xs">
                             An immersive cinematic experience exploring the Marvel Cinematic Universe.
-                            Built for the hackathon design challenge.
                         </p>
                     </div>
 
@@ -79,11 +81,7 @@ export default function Footer() {
                 {/* Copyright */}
                 <div className="mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-xs text-white/30">
-                        © 2024 Marvel Universe Explorer. Built for hackathon purposes.
-                        All Marvel content belongs to Marvel Entertainment / Disney.
-                    </p>
-                    <p className="text-xs text-white/20">
-                        Powered by Next.js, Three.js, GSAP & Framer Motion
+                        © 2026 Marvel Universe Explorer.
                     </p>
                 </div>
             </div>

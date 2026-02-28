@@ -17,7 +17,7 @@ const CursorSwitcher: React.FC = () => {
     ];
 
     return (
-        <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-3">
+        <div className="fixed bottom-24 md:bottom-6 right-6 z-[100] flex flex-col items-end gap-3">
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -34,8 +34,8 @@ const CursorSwitcher: React.FC = () => {
                                 key={opt.id}
                                 onClick={() => setCursorType(opt.id)}
                                 className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 ${cursorType === opt.id
-                                        ? "bg-white/10 border border-white/20"
-                                        : "hover:bg-white/5 border border-transparent"
+                                    ? "bg-white/10 border border-white/20"
+                                    : "hover:bg-white/5 border border-transparent"
                                     }`}
                             >
                                 <div

@@ -11,6 +11,43 @@ interface CharacterCardProps {
     index?: number;
 }
 
+// Map character IDs to local render PNGs
+const localRenders: Record<string, string> = {
+    "iron-man": "/characters/renders/iron-man.png",
+    "thor": "/characters/renders/thor.png",
+    "captain-america": "/characters/renders/captain-america.png",
+    "hulk": "/characters/renders/hulk.png",
+    "spider-man": "/characters/renders/spider-man-render.png",
+    "doctor-strange": "/characters/renders/doctor-strange.png",
+    "black-panther": "/characters/renders/black-panther.png",
+    "thanos": "/characters/renders/thanos.png",
+    "black-widow": "/characters/renders/black-widow.png",
+    "hawkeye": "/characters/renders/hawkeye.png",
+    "captain-marvel": "/characters/renders/captain-marvel.png",
+    "ant-man": "/characters/renders/ant-man.png",
+    "loki": "/characters/renders/loki.png",
+    "falcon": "/characters/renders/falcon.png",
+    "vision": "/characters/renders/vision.png",
+    "war-machine": "/characters/renders/war-machine.png",
+    "star-lord": "/characters/renders/star-lord.png",
+    "gamora": "/characters/renders/gamora.png",
+    "groot": "/characters/renders/groot.png",
+    "rocket": "/characters/renders/rocket.png",
+    "winter-soldier": "/characters/renders/winter-soldier.png",
+    "nick-fury": "/characters/renders/nick-fury.png",
+    "wasp": "/characters/renders/wasp.png",
+    // Missing characters to be supplied by user
+    "moon-knight": "/characters/renders/moon-knight.png",
+    "ms-marvel": "/characters/renders/ms-marvel.png",
+    "she-hulk": "/characters/renders/she-hulk.png",
+    "wandavision-agatha": "/characters/renders/agatha.png",
+    "kang": "/characters/renders/kang.png",
+    "pepper-potts": "/characters/renders/pepper-potts.png",
+    "drax": "/characters/renders/drax.png",
+    "nebula": "/characters/renders/nebula.png",
+    "shang-chi": "/characters/renders/shang-chi.png",
+};
+
 export default function CharacterCard({ character, index = 0 }: CharacterCardProps) {
     const maxStat = Math.max(
         character.stats.strength,
@@ -20,6 +57,10 @@ export default function CharacterCard({ character, index = 0 }: CharacterCardPro
         character.stats.combat,
         character.stats.durability
     );
+
+    // Use local render PNG if available, otherwise use TMDB URL
+    const imageUrl = localRenders[character.id] || character.imageUrl;
+    const isLocalRender = character.id in localRenders;
 
     return (
         <motion.div
@@ -36,15 +77,21 @@ export default function CharacterCard({ character, index = 0 }: CharacterCardPro
                     <div className="absolute inset-0 transition-all duration-700 ease-out [backface-visibility:hidden] group-hover:[transform:rotateY(180deg)]">
                         {/* Portrait */}
                         <Image
-                            src={character.imageUrl}
+                            src={imageUrl}
                             alt={character.name}
                             fill
+                            unoptimized
                             onError={(e) => {
-                                e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg";
-                                e.currentTarget.className = "object-contain p-6 opacity-40";
+                                // Fallback chain: local render → TMDB URL → Marvel logo
+                                if (isLocalRender) {
+                                    e.currentTarget.src = character.imageUrl;
+                                } else {
+                                    e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg";
+                                    e.currentTarget.className = "object-contain p-6 opacity-40";
+                                }
                             }}
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                            className="object-cover"
+                            className={isLocalRender ? "object-contain object-bottom" : "object-cover"}
                         />
 
                         {/* Gradient overlay */}

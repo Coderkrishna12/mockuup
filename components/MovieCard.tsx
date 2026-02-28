@@ -57,7 +57,7 @@ export default function MovieCard({ movie, index = 0 }: MovieCardProps) {
                         <h3 className="font-heading text-xl md:text-2xl text-white tracking-wide leading-tight mb-1">
                             {movie.title}
                         </h3>
-                        <p className="text-xs text-white/50 mb-2">{movie.director}</p>
+                        <p className="text-xs text-white/80 mb-2">{movie.director}</p>
                         <div className="flex gap-1 flex-wrap opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
                             {movie.genre.slice(0, 3).map((g) => (
                                 <span

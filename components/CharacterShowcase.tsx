@@ -1,67 +1,348 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useRef, useState, useMemo } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search, ChevronRight } from "lucide-react";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
+import { Search } from "lucide-react";
 import { characters } from "@/data/characters";
 
 /* ═══════════════════════════════════════════════════════════════
-   TRENDING CAROUSEL DATA
+   HERO SHOWCASE DATA — each character gets a full-screen section
    ═════════════════════════════════════════════════════════════ */
-const trendingSlides = [
+const showcaseHeroes = [
     {
-        id: 1,
-        title: "AVENGERS: SECRET WARS",
-        subtitle: "THE MULTIVERSE SAGA CONCLUDES",
-        tag: "UPCOMING MOVIE",
+        id: "iron-man",
+        name: "IRON MAN",
+        subtitle: "THE ARMORED AVENGER",
+        tag: "FOUNDING MEMBER",
         image: "/characters/renders/iron-man.png",
-        gradient: "linear-gradient(135deg, #1a0000, #2d0a0a)",
+        gradient: "linear-gradient(135deg, #1a0000 0%, #2d0a0a 50%, #0a0000 100%)",
         accentColor: "#E8002D",
+        quote: "I am Iron Man.",
+        releaseInfo: "FIRST APPEARANCE: 2008",
+        stats: { STR: 85, SPD: 70, INT: 100, PWR: 85 },
     },
     {
-        id: 2,
-        title: "THOR: VALHALLA",
-        subtitle: "A NEW CHAPTER FOR THE GOD OF THUNDER",
-        tag: "PHASE 7",
+        id: "spider-man",
+        name: "SPIDER-MAN",
+        subtitle: "THE WEB-SLINGER",
+        tag: "NEIGHBORHOOD HERO",
+        image: "/characters/renders/spider-man-render.png",
+        gradient: "linear-gradient(135deg, #1a0005 0%, #2d0a15 50%, #0a0005 100%)",
+        accentColor: "#DC2626",
+        quote: "With great power comes great responsibility.",
+        releaseInfo: "FIRST APPEARANCE: 2016",
+        stats: { STR: 75, SPD: 80, INT: 85, PWR: 70 },
+    },
+    {
+        id: "thor",
+        name: "THOR",
+        subtitle: "GOD OF THUNDER",
+        tag: "ASGARDIAN AVENGER",
         image: "/characters/renders/thor.png",
-        gradient: "linear-gradient(135deg, #0a0a1a, #0a1428)",
+        gradient: "linear-gradient(135deg, #0a0a1a 0%, #0a1428 50%, #050a14 100%)",
         accentColor: "#1A5B9C",
+        quote: "Bring me Thanos!",
+        releaseInfo: "FIRST APPEARANCE: 2011",
+        stats: { STR: 95, SPD: 70, INT: 60, PWR: 100 },
     },
     {
-        id: 3,
-        title: "DOCTOR STRANGE 3",
-        subtitle: "THE SORCERER SUPREME RETURNS",
-        tag: "NOW STREAMING",
+        id: "captain-america",
+        name: "CAPTAIN AMERICA",
+        subtitle: "THE FIRST AVENGER",
+        tag: "SYMBOL OF FREEDOM",
+        image: "/characters/renders/captain-america.png",
+        gradient: "linear-gradient(135deg, #0a0a14 0%, #0a1428 50%, #050a14 100%)",
+        accentColor: "#1E3A8A",
+        quote: "I can do this all day.",
+        releaseInfo: "FIRST APPEARANCE: 2011",
+        stats: { STR: 80, SPD: 65, INT: 70, PWR: 65 },
+    },
+    {
+        id: "doctor-strange",
+        name: "DOCTOR STRANGE",
+        subtitle: "SORCERER SUPREME",
+        tag: "MASTER OF MYSTIC ARTS",
         image: "/characters/renders/doctor-strange.png",
-        gradient: "linear-gradient(135deg, #0a0512, #1a0a28)",
+        gradient: "linear-gradient(135deg, #0a0512 0%, #1a0a28 50%, #050512 100%)",
         accentColor: "#8B5CF6",
+        quote: "We're in the endgame now.",
+        releaseInfo: "FIRST APPEARANCE: 2016",
+        stats: { STR: 40, SPD: 50, INT: 95, PWR: 98 },
     },
     {
-        id: 4,
-        title: "THE MAD TITAN",
-        subtitle: "WITNESS THE RISE OF THANOS",
-        tag: "DISNEY+ ORIGINAL",
+        id: "black-panther",
+        name: "BLACK PANTHER",
+        subtitle: "KING OF WAKANDA",
+        tag: "WAKANDA FOREVER",
+        image: "/characters/renders/black-panther.png",
+        gradient: "linear-gradient(135deg, #0a0512 0%, #140a1e 50%, #050512 100%)",
+        accentColor: "#7C3AED",
+        quote: "Wakanda forever!",
+        releaseInfo: "FIRST APPEARANCE: 2016",
+        stats: { STR: 75, SPD: 72, INT: 90, PWR: 70 },
+    },
+    {
+        id: "thanos",
+        name: "THANOS",
+        subtitle: "THE MAD TITAN",
+        tag: "THE ULTIMATE VILLAIN",
         image: "/characters/renders/thanos.png",
-        gradient: "linear-gradient(135deg, #140a1a, #1a0a28)",
+        gradient: "linear-gradient(135deg, #140a1a 0%, #1a0a28 50%, #0a0514 100%)",
         accentColor: "#F0C040",
+        quote: "I am inevitable.",
+        releaseInfo: "FIRST APPEARANCE: 2012",
+        stats: { STR: 100, SPD: 50, INT: 85, PWR: 100 },
+    },
+    {
+        id: "hulk",
+        name: "HULK",
+        subtitle: "THE INCREDIBLE HULK",
+        tag: "STRONGEST AVENGER",
+        image: "/characters/renders/hulk.png",
+        gradient: "linear-gradient(135deg, #001a00 0%, #0a1a0a 50%, #000a00 100%)",
+        accentColor: "#166534",
+        quote: "Hulk smash!",
+        releaseInfo: "FIRST APPEARANCE: 2008",
+        stats: { STR: 100, SPD: 55, INT: 95, PWR: 95 },
     },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
-   AVENGERS INITIATIVE DATA (expanding cards)
+   MAIN COMPONENT
    ═════════════════════════════════════════════════════════════ */
-const avengersCards = [
-    { key: "ironman", name: "IRON MAN", image: "/characters/renders/iron-man.png", color: "#E8002D", quote: "I am Iron Man." },
-    { key: "thor", name: "THOR", image: "/characters/renders/thor.png", color: "#1A5B9C", quote: "Bring me Thanos!" },
-    { key: "strange", name: "DR. STRANGE", image: "/characters/renders/doctor-strange.png", color: "#8B5CF6", quote: "We are in the endgame now." },
-    { key: "cap", name: "CAPTAIN AMERICA", image: "/characters/renders/captain-america.png", color: "#1E3A8A", quote: "I can do this all day." },
-    { key: "hulk", name: "HULK", image: "/characters/renders/hulk.png", color: "#166534", quote: "Hulk smash!" },
-    { key: "spider", name: "SPIDER-MAN", image: "/characters/renders/spider-man-render.png", color: "#DC2626", quote: "With great power comes great responsibility." },
-];
+export default function CharacterShowcase() {
+    return (
+        <>
+            {/* Section intro header */}
+            <div className="relative z-10 py-20">
+                <div className="max-w-7xl mx-auto px-6 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <div className="flex items-center justify-center gap-4 mb-6">
+                            <div className="h-px w-16 bg-gradient-to-r from-transparent to-marvel-red" />
+                            <span className="font-heading text-sm tracking-[4px] text-marvel-red">SCROLL TO EXPLORE</span>
+                            <div className="h-px w-16 bg-gradient-to-l from-transparent to-marvel-red" />
+                        </div>
+                        <h2 className="font-heading text-5xl md:text-7xl lg:text-8xl text-white tracking-wider">
+                            EARTH&apos;S MIGHTIEST <span className="text-marvel-red">HEROES</span>
+                        </h2>
+                    </motion.div>
+                </div>
+            </div>
+
+            {/* Full-screen hero cinematic sections */}
+            {showcaseHeroes.map((hero, index) => (
+                <HeroSection key={hero.id} hero={hero} index={index} />
+            ))}
+
+            {/* Character database grid */}
+            <CharacterDatabase />
+        </>
+    );
+}
 
 /* ═══════════════════════════════════════════════════════════════
-   CHARACTER DATABASE DATA (grid with search/filter)
+   FULL-SCREEN HERO SECTION — one per character, cinematic promo style
+   ═════════════════════════════════════════════════════════════ */
+function HeroSection({
+    hero,
+    index,
+}: {
+    hero: (typeof showcaseHeroes)[number];
+    index: number;
+}) {
+    const sectionRef = useRef<HTMLElement>(null);
+    const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
+    const { scrollYProgress } = useScroll({
+        target: sectionRef,
+        offset: ["start end", "end start"],
+    });
+
+    const imageY = useTransform(scrollYProgress, [0, 1], [80, -80]);
+    const textY = useTransform(scrollYProgress, [0, 1], [50, -50]);
+    const opacity = useTransform(scrollYProgress, [0, 0.15, 0.45, 0.75, 1], [0, 1, 1, 1, 0]);
+    const isEven = index % 2 === 0;
+
+    return (
+        <section
+            ref={sectionRef}
+            className="relative min-h-[100svh] flex items-center py-20 lg:py-0 overflow-hidden"
+            style={{ background: hero.gradient }}
+        >
+            {/* Ambient glow */}
+            <div
+                className="absolute pointer-events-none transition-opacity duration-1000"
+                style={{
+                    top: "20%",
+                    [isEven ? "right" : "left"]: "5%",
+                    width: "60vw",
+                    height: "60vw",
+                    background: `radial-gradient(circle, ${hero.accentColor}15 0%, transparent 55%)`,
+                    filter: "blur(80px)",
+                    opacity: isInView ? 1 : 0,
+                }}
+            />
+
+            {/* Top accent line */}
+            <div
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{ background: `linear-gradient(90deg, transparent, ${hero.accentColor}50, transparent)` }}
+            />
+
+            {/* Large background text watermark */}
+            <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
+                <span
+                    className="font-heading text-[18vw] leading-none tracking-[0.1em] opacity-[0.03] whitespace-nowrap"
+                    style={{ color: hero.accentColor }}
+                >
+                    {hero.name}
+                </span>
+            </div>
+
+            <motion.div style={{ opacity }} className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12">
+                <div className={`grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-4 ${!isEven ? "lg:[direction:rtl]" : ""}`}>
+                    {/* Text Side */}
+                    <motion.div
+                        style={{ y: textY }}
+                        className={`flex flex-col gap-4 md:gap-5 ${!isEven ? "lg:[direction:ltr]" : ""}`}
+                    >
+                        {/* Tag */}
+                        <motion.span
+                            initial={{ opacity: 0, x: -30 }}
+                            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                            className="font-heading text-sm tracking-[3px] flex items-center gap-3"
+                            style={{ color: hero.accentColor }}
+                        >
+                            <span className="w-8 h-0.5 inline-block" style={{ backgroundColor: hero.accentColor }} />
+                            {hero.tag}
+                        </motion.span>
+
+                        {/* Name — huge, split into lines */}
+                        <motion.h2
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                            transition={{ duration: 0.7, delay: 0.2 }}
+                            className="font-heading text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-white tracking-wider leading-[0.85]"
+                        >
+                            {hero.name.split(" ").map((word, i) => (
+                                <span key={i} className="block">
+                                    {i > 0 ? <span style={{ color: hero.accentColor }}>{word}</span> : word}
+                                </span>
+                            ))}
+                        </motion.h2>
+
+                        {/* Subtitle */}
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                            className="text-white/35 text-base md:text-lg tracking-[4px] uppercase"
+                        >
+                            {hero.subtitle}
+                        </motion.p>
+
+                        {/* Quote */}
+                        <motion.blockquote
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                            transition={{ duration: 0.5, delay: 0.5 }}
+                            className="text-white/50 text-base md:text-lg italic pl-4 max-w-md"
+                            style={{ borderLeft: `3px solid ${hero.accentColor}` }}
+                        >
+                            &ldquo;{hero.quote}&rdquo;
+                        </motion.blockquote>
+
+                        {/* Stat pills */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                            transition={{ duration: 0.5, delay: 0.6 }}
+                            className="flex flex-wrap gap-4 md:gap-5 mt-2"
+                        >
+                            {Object.entries(hero.stats).map(([key, value]) => (
+                                <div key={key} className="text-center">
+                                    <div
+                                        className="font-heading text-3xl md:text-4xl tracking-wider"
+                                        style={{ color: value >= 90 ? hero.accentColor : "white" }}
+                                    >
+                                        {value}
+                                    </div>
+                                    <div className="text-[10px] text-white/40 tracking-[3px] mt-1">{key}</div>
+                                </div>
+                            ))}
+                        </motion.div>
+
+                        {/* CTA */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                            transition={{ duration: 0.5, delay: 0.7 }}
+                            className="flex items-center gap-5 mt-4"
+                        >
+                            <Link
+                                href={`/characters/${hero.id}`}
+                                className="group relative inline-flex items-center gap-2 px-8 py-3.5 font-heading text-white text-base tracking-widest transition-all hover:-translate-y-1"
+                                style={{
+                                    backgroundColor: hero.accentColor,
+                                    clipPath: "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)",
+                                    boxShadow: `0 10px 40px ${hero.accentColor}50`,
+                                }}
+                            >
+                                EXPLORE HERO
+                                <span className="transition-transform group-hover:translate-x-1">→</span>
+                            </Link>
+                            <span className="text-xs text-white/25 tracking-[2px]">{hero.releaseInfo}</span>
+                        </motion.div>
+                    </motion.div>
+
+                    {/* Character Render Side */}
+                    <motion.div
+                        style={{ y: imageY }}
+                        className={`flex justify-center items-end ${!isEven ? "lg:[direction:ltr]" : ""}`}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.75, x: isEven ? 100 : -100 }}
+                            animate={isInView ? { opacity: 1, scale: 1, x: 0 } : { opacity: 0, scale: 0.75, x: isEven ? 100 : -100 }}
+                            transition={{ duration: 0.9, delay: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+                            className="relative"
+                        >
+                            {/* Glow behind character */}
+                            <div
+                                className="absolute inset-0 pointer-events-none"
+                                style={{
+                                    background: `radial-gradient(circle at center 60%, ${hero.accentColor}12 0%, transparent 50%)`,
+                                }}
+                            />
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={hero.image}
+                                alt={hero.name}
+                                className="relative z-10 max-h-[50vh] md:max-h-[75vh] w-auto object-contain mx-auto"
+                                style={{
+                                    filter: `drop-shadow(0 0 60px ${hero.accentColor}25) drop-shadow(0 20px 40px rgba(0,0,0,0.6))`,
+                                }}
+                            />
+                        </motion.div>
+                    </motion.div>
+                </div>
+            </motion.div>
+
+            {/* Bottom fade */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050505] to-transparent z-20 pointer-events-none" />
+            {/* Top fade from previous section */}
+            <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[#050505] to-transparent z-20 pointer-events-none" />
+        </section>
+    );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHARACTER DATABASE DATA
    ═════════════════════════════════════════════════════════════ */
 interface CharDBEntry {
     id: string;
@@ -102,280 +383,7 @@ const charDB: CharDBEntry[] = [
 const allTeams = [...new Set(charDB.map((c) => c.team))];
 
 /* ═══════════════════════════════════════════════════════════════
-   MAIN COMPONENT
-   ═════════════════════════════════════════════════════════════ */
-export default function CharacterShowcase() {
-    return (
-        <>
-            <TrendingCarousel />
-            <AvengersInitiative />
-            <CharacterDatabase />
-        </>
-    );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 1: TRENDING CAROUSEL
-   ═════════════════════════════════════════════════════════════ */
-function TrendingCarousel() {
-    const [current, setCurrent] = useState(0);
-    const [transitioning, setTransitioning] = useState(false);
-
-    const goTo = useCallback(
-        (idx: number) => {
-            if (transitioning) return;
-            setTransitioning(true);
-            setCurrent(idx);
-            setTimeout(() => setTransitioning(false), 800);
-        },
-        [transitioning]
-    );
-
-    const next = useCallback(() => {
-        goTo((current + 1) % trendingSlides.length);
-    }, [current, goTo]);
-
-    useEffect(() => {
-        const interval = setInterval(next, 5000);
-        return () => clearInterval(interval);
-    }, [next]);
-
-    const slide = trendingSlides[current];
-
-    return (
-        <section
-            className="relative w-full min-h-[80vh] overflow-hidden flex items-center"
-            style={{ ["--accent" as string]: slide.accentColor }}
-        >
-            {/* BG gradient */}
-            <div className="absolute inset-0 transition-all duration-800" style={{ background: slide.gradient }} />
-            {/* Glow */}
-            <div
-                className="absolute top-1/2 right-[10%] w-[50vw] h-[50vw] -translate-y-1/2 blur-[80px] pointer-events-none transition-all duration-800"
-                style={{ background: `radial-gradient(circle, ${slide.accentColor}22, transparent 60%)` }}
-            />
-
-            {/* Content grid */}
-            <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[5%] grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
-                {/* Left */}
-                <div className="flex flex-col gap-6">
-                    <span
-                        className="font-heading text-sm tracking-[3px] flex items-center gap-2.5"
-                        style={{ color: slide.accentColor }}
-                    >
-                        <span className="w-8 h-0.5 inline-block" style={{ backgroundColor: slide.accentColor }} />
-                        {slide.tag}
-                    </span>
-
-                    <AnimatePresence mode="wait">
-                        <motion.h2
-                            key={slide.id}
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.5 }}
-                            className="font-heading text-6xl md:text-7xl lg:text-8xl text-white tracking-wider leading-[0.95]"
-                        >
-                            {slide.title}
-                        </motion.h2>
-                    </AnimatePresence>
-
-                    <AnimatePresence mode="wait">
-                        <motion.p
-                            key={`sub-${slide.id}`}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.4, delay: 0.1 }}
-                            className="text-white/50 text-lg"
-                        >
-                            {slide.subtitle}
-                        </motion.p>
-                    </AnimatePresence>
-
-                    <div className="flex gap-4">
-                        <button
-                            className="px-8 py-3 font-heading text-white text-lg tracking-widest transition-all hover:-translate-y-1"
-                            style={{
-                                backgroundColor: slide.accentColor,
-                                clipPath: "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)",
-                                boxShadow: `0 8px 30px ${slide.accentColor}40`,
-                            }}
-                        >
-                            LEARN MORE
-                        </button>
-                        <button className="px-6 py-3 font-heading text-white/70 text-lg tracking-widest border border-white/20 hover:bg-white/10 hover:text-white transition-all">
-                            ▶ WATCH TRAILER
-                        </button>
-                    </div>
-                </div>
-
-                {/* Right — character render */}
-                <div className="hidden lg:flex justify-center items-end">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={slide.id}
-                            initial={{ opacity: 0, x: 40, scale: 0.95 }}
-                            animate={{ opacity: 1, x: 0, scale: 1 }}
-                            exit={{ opacity: 0, x: -30, scale: 0.95 }}
-                            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-                        >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={slide.image}
-                                alt={slide.title}
-                                className="max-h-[65vh] object-contain drop-shadow-[0_0_40px_rgba(0,0,0,0.6)]"
-                            />
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-            </div>
-
-            {/* Dots */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                {trendingSlides.map((_, i) => (
-                    <button
-                        key={i}
-                        onClick={() => goTo(i)}
-                        className="w-10 h-1 rounded-sm overflow-hidden relative"
-                        style={{ backgroundColor: "rgba(255,255,255,0.2)" }}
-                    >
-                        {i === current && (
-                            <motion.span
-                                className="absolute inset-0 rounded-sm"
-                                style={{ backgroundColor: slide.accentColor }}
-                                initial={{ width: 0 }}
-                                animate={{ width: "100%" }}
-                                transition={{ duration: 5, ease: "linear" }}
-                            />
-                        )}
-                    </button>
-                ))}
-            </div>
-
-            {/* Counter */}
-            <div className="absolute bottom-12 right-[5%] z-20 font-heading text-white/30 tracking-wider text-lg">
-                <span className="text-white text-2xl">0{current + 1}</span>
-                <span className="mx-1">/</span>
-                <span>0{trendingSlides.length}</span>
-            </div>
-        </section>
-    );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 2: AVENGERS INITIATIVE (Expanding Cards)
-   ═════════════════════════════════════════════════════════════ */
-function AvengersInitiative() {
-    const [active, setActive] = useState<string | null>(null);
-    const [hovered, setHovered] = useState<string | null>(null);
-
-    const highlight = hovered || active;
-    const glowColor = avengersCards.find((c) => c.key === highlight)?.color || "#E8002D";
-
-    return (
-        <section
-            className="relative py-32 min-h-screen overflow-hidden"
-            style={{ ["--glow-color" as string]: glowColor, background: "#050505" }}
-        >
-            {/* Glow background */}
-            <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] pointer-events-none transition-all duration-600 z-0"
-                style={{ background: `radial-gradient(circle, ${glowColor}1A, transparent 60%)`, filter: "blur(80px)" }}
-            />
-
-            <div className="relative z-10 max-w-[1400px] mx-auto px-6">
-                {/* Header */}
-                <div className="mb-16">
-                    <div className="flex items-center gap-3 mb-4">
-                        <span className="w-10 h-0.5 bg-marvel-red" />
-                        <span className="font-heading text-sm tracking-[3px] text-marvel-red">CHOOSE YOUR HERO</span>
-                    </div>
-                    <h2 className="font-heading text-5xl md:text-7xl text-white tracking-wider">
-                        THE AVENGERS <span className="text-marvel-red">INITIATIVE</span>
-                    </h2>
-                </div>
-
-                {/* Expanding card gallery */}
-                <div className="flex gap-4 h-[550px]">
-                    {avengersCards.map((card) => {
-                        const isActive = active === card.key || hovered === card.key;
-                        return (
-                            <div
-                                key={card.key}
-                                className="relative rounded-xl overflow-hidden cursor-pointer border transition-all duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-                                style={{
-                                    flex: isActive ? 3 : 1,
-                                    borderColor: isActive ? card.color : "rgba(255,255,255,0.06)",
-                                    background: "rgba(15,15,15,0.8)",
-                                }}
-                                onClick={() => setActive(active === card.key ? null : card.key)}
-                                onMouseEnter={() => setHovered(card.key)}
-                                onMouseLeave={() => setHovered(null)}
-                            >
-                                {/* Character image anchored at bottom */}
-                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[90%] flex justify-center items-end pointer-events-none z-[1]">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src={card.image}
-                                        alt={card.name}
-                                        className="max-h-full max-w-full object-contain object-bottom transition-all duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-                                        style={{
-                                            filter: isActive ? "saturate(1.1) brightness(1)" : "saturate(0.7) brightness(0.8)",
-                                            transform: isActive ? "scale(1) translateY(0)" : "scale(0.85) translateY(20px)",
-                                        }}
-                                    />
-                                </div>
-
-                                {/* Info overlay (visible on hover/active) */}
-                                <div
-                                    className="absolute bottom-0 left-0 right-0 z-[2] p-6 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                                    style={{
-                                        background: "linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6) 60%, transparent)",
-                                        opacity: isActive ? 1 : 0,
-                                        transform: isActive ? "translateY(0)" : "translateY(20px)",
-                                    }}
-                                >
-                                    <h3 className="font-heading text-4xl text-white tracking-wider mb-1">{card.name}</h3>
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <span
-                                            className="w-1.5 h-1.5 rounded-full"
-                                            style={{ backgroundColor: card.color, boxShadow: `0 0 8px ${card.color}` }}
-                                        />
-                                        <span className="text-xs tracking-widest" style={{ color: card.color }}>
-                                            EARTH-616
-                                        </span>
-                                    </div>
-                                    <p
-                                        className="text-white/60 text-sm leading-relaxed pl-3 mb-4"
-                                        style={{ borderLeft: `2px solid ${card.color}` }}
-                                    >
-                                        &ldquo;{card.quote}&rdquo;
-                                    </p>
-                                    <span className="font-heading text-sm tracking-widest" style={{ color: active === card.key ? card.color : "white" }}>
-                                        {active === card.key ? "● ACTIVE" : "SELECT →"}
-                                    </span>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Responsive fallback for mobile */}
-            <style>{`
-                @media (max-width: 1024px) {
-                    .flex.h-\\[550px\\] { flex-direction: column !important; height: auto !important; }
-                    .flex.h-\\[550px\\] > div { flex: none !important; height: 200px; }
-                    .flex.h-\\[550px\\] > div:hover { height: 350px; }
-                }
-            `}</style>
-        </section>
-    );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 3: CHARACTER DATABASE GRID
+   CHARACTER DATABASE GRID
    ═════════════════════════════════════════════════════════════ */
 function CharacterDatabase() {
     const [search, setSearch] = useState("");
@@ -394,19 +402,16 @@ function CharacterDatabase() {
     return (
         <section className="relative py-24 overflow-hidden" style={{ background: "#050505" }}>
             <div className="max-w-[1400px] mx-auto px-6">
-                {/* Header */}
                 <div className="mb-4">
                     <div className="flex items-center gap-3 mb-4">
                         <span className="w-10 h-0.5 bg-marvel-red" />
                         <span className="font-heading text-sm tracking-[3px] text-marvel-red">MARVEL DATABASE</span>
                     </div>
-                    <h2 className="font-heading text-5xl md:text-7xl text-white tracking-wider mb-2">CHARACTERS</h2>
+                    <h2 className="font-heading text-4xl sm:text-5xl md:text-7xl text-white tracking-wider mb-2">CHARACTERS</h2>
                     <p className="text-white/40">{charDB.length} heroes, villains, and legends</p>
                 </div>
 
-                {/* Filters */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6 mb-8 border-b border-white/5">
-                    {/* Search */}
                     <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-lg px-4 py-3 min-w-[300px] focus-within:border-marvel-red transition-colors">
                         <Search size={18} className="text-white/40 shrink-0" />
                         <input
@@ -417,8 +422,6 @@ function CharacterDatabase() {
                             className="bg-transparent border-none text-white outline-none w-full text-sm placeholder:text-white/30"
                         />
                     </div>
-
-                    {/* Team filters */}
                     <div className="flex gap-2 flex-wrap">
                         <button
                             onClick={() => setActiveTeam("All")}
@@ -444,14 +447,10 @@ function CharacterDatabase() {
                     </div>
                 </div>
 
-                {/* Grid */}
-                <motion.div
-                    layout
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5"
-                >
+                <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5">
                     <AnimatePresence mode="popLayout">
                         {filtered.map((char) => (
-                            <CharacterCard key={char.id} char={char} />
+                            <CharacterGridCard key={char.id} char={char} />
                         ))}
                     </AnimatePresence>
                 </motion.div>
@@ -468,12 +467,10 @@ function CharacterDatabase() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CHARACTER CARD (grid item)
+   CHARACTER GRID CARD
    ═════════════════════════════════════════════════════════════ */
-function CharacterCard({ char }: { char: CharDBEntry }) {
+function CharacterGridCard({ char }: { char: CharDBEntry }) {
     const [hovered, setHovered] = useState(false);
-
-    // Check if this character exists in our data/characters.ts for linking
     const hasDetailPage = characters.some((c) => c.id === char.id);
 
     const card = (
@@ -485,18 +482,14 @@ function CharacterCard({ char }: { char: CharDBEntry }) {
             transition={{ duration: 0.4 }}
             className="relative h-[380px] rounded-xl overflow-hidden cursor-pointer border transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
             style={{
-                ["--char-color" as string]: char.color,
                 background: "rgba(15,15,15,0.8)",
                 borderColor: hovered ? char.color : "rgba(255,255,255,0.06)",
                 transform: hovered ? "translateY(-8px)" : "translateY(0)",
-                boxShadow: hovered
-                    ? `0 20px 40px rgba(0,0,0,0.5), 0 0 30px ${char.color}33`
-                    : "none",
+                boxShadow: hovered ? `0 20px 40px rgba(0,0,0,0.5), 0 0 30px ${char.color}33` : "none",
             }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            {/* Image */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[85%] flex justify-center items-end pointer-events-none z-[1]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -509,8 +502,6 @@ function CharacterCard({ char }: { char: CharDBEntry }) {
                     }}
                 />
             </div>
-
-            {/* Overlay */}
             <div
                 className="absolute bottom-0 left-0 right-0 p-5 z-[2] transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
                 style={{
@@ -518,33 +509,25 @@ function CharacterCard({ char }: { char: CharDBEntry }) {
                     transform: hovered ? "translateY(0)" : "translateY(40px)",
                 }}
             >
-                <span className="text-[10px] font-heading tracking-widest" style={{ color: char.color }}>
-                    {char.team.toUpperCase()}
-                </span>
+                <span className="text-[10px] font-heading tracking-widest" style={{ color: char.color }}>{char.team.toUpperCase()}</span>
                 <h3 className="font-heading text-2xl text-white tracking-wider my-1">{char.name}</h3>
                 <p className="text-xs text-white/50 mb-3">{char.alias}</p>
-
-                {/* Power stats */}
                 <div
-                    className="flex flex-col gap-1.5 transition-all duration-400"
-                    style={{
-                        opacity: hovered ? 1 : 0,
-                        transform: hovered ? "translateY(0)" : "translateY(10px)",
-                        transitionDelay: hovered ? "150ms" : "0ms",
-                    }}
+                    className="flex flex-col gap-1.5 transition-all"
+                    style={{ opacity: hovered ? 1 : 0, transform: hovered ? "translateY(0)" : "translateY(10px)", transitionDelay: hovered ? "150ms" : "0ms", transitionDuration: "400ms" }}
                 >
                     {(["strength", "intelligence", "speed", "durability"] as const).map((stat) => (
                         <div key={stat} className="flex items-center gap-2">
-                            <span className="text-[10px] font-heading tracking-wider text-white/50 w-7 uppercase">
-                                {stat.slice(0, 3)}
-                            </span>
+                            <span className="text-[10px] font-heading tracking-wider text-white/50 w-7 uppercase">{stat.slice(0, 3)}</span>
                             <div className="flex-1 h-[3px] bg-white/10 rounded-sm overflow-hidden">
                                 <div
-                                    className="h-full rounded-sm transition-all duration-800 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+                                    className="h-full rounded-sm"
                                     style={{
                                         backgroundColor: char.color,
                                         width: hovered ? `${char.powers[stat]}%` : "0%",
                                         transitionDelay: hovered ? "300ms" : "0ms",
+                                        transitionDuration: "800ms",
+                                        transitionTimingFunction: "cubic-bezier(0.2, 0.8, 0.2, 1)",
                                     }}
                                 />
                             </div>
@@ -555,8 +538,6 @@ function CharacterCard({ char }: { char: CharDBEntry }) {
         </motion.div>
     );
 
-    if (hasDetailPage) {
-        return <Link href={`/characters/${char.id}`}>{card}</Link>;
-    }
+    if (hasDetailPage) return <Link href={`/characters/${char.id}`}>{card}</Link>;
     return card;
 }

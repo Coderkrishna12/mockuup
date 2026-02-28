@@ -5,36 +5,45 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Volume2, VolumeX, Zap } from "lucide-react";
+import { Menu, X, Zap, Home, Film, Tv, Users } from "lucide-react";
 import { audioManager } from "@/lib/audio";
+
+const getIconForLabel = (label: string) => {
+    switch (label) {
+        case "Home": return Home;
+        case "Movies": return Film;
+        case "TV Shows": return Tv;
+        case "Characters": return Users;
+        default: return Home;
+    }
+};
 
 const navLinks = [
     { href: "/", label: "Home" },
+    { href: "/characters", label: "Characters" },
     { href: "/movies", label: "Movies" },
     { href: "/tvshows", label: "TV Shows" },
-    { href: "/characters", label: "Characters" },
-    { href: "/timeline", label: "Timeline" },
     { href: "/comics", label: "Comics" },
+    { href: "/timeline", label: "Timeline" },
     { href: "/arcade", label: "Arcade" },
     { href: "/history", label: "History" },
     { href: "/ar", label: "AR" },
     { href: "/multiverse", label: "Multiverse" },
 ];
 
-const demoSteps = [
-    { href: "/", label: "1. Home" },
-    { href: "/movies", label: "2. Movies" },
-    { href: "/timeline", label: "3. Timeline" },
-    { href: "/characters", label: "4. Characters" },
-    { href: "/multiverse", label: "5. Multiverse" },
-];
+// const demoSteps = [
+//     { href: "/", label: "1. Home" },
+//     { href: "/movies", label: "2. Movies" },
+//     { href: "/timeline", label: "3. Timeline" },
+//     { href: "/characters", label: "4. Characters" },
+//     { href: "/multiverse", label: "5. Multiverse" },
+// ];
 
 export default function Navbar() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const [muted, setMuted] = useState(true);
-    const [showDemo, setShowDemo] = useState(false);
+    // const [showDemo, setShowDemo] = useState(false);
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 50);
@@ -50,12 +59,6 @@ export default function Navbar() {
         }
         return () => { document.body.style.overflow = ""; };
     }, [isOpen]);
-
-    const toggleMute = () => {
-        const newMuted = audioManager.toggleMute();
-        setMuted(newMuted);
-        if (!newMuted) audioManager.playClick();
-    };
 
     return (
         <>
@@ -109,7 +112,7 @@ export default function Navbar() {
                     </div>
 
                     {/* Controls */}
-                    <div className="flex items-center gap-2">
+                    {/* <div className="flex items-center gap-2">
                         <button
                             onClick={() => setShowDemo(!showDemo)}
                             className="p-2 rounded-lg hover:bg-white/5 transition-colors text-marvel-gold"
@@ -118,18 +121,11 @@ export default function Navbar() {
                         >
                             <Zap size={18} />
                         </button>
-                        <button
-                            onClick={toggleMute}
-                            className="p-2 rounded-lg hover:bg-white/5 transition-colors text-white/60 hover:text-white"
-                            aria-label={muted ? "Unmute audio" : "Mute audio"}
-                        >
-                            {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-                        </button>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Demo Mode Panel */}
-                <AnimatePresence>
+                {/* <AnimatePresence>
                     {showDemo && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
@@ -152,30 +148,52 @@ export default function Navbar() {
                             </div>
                         </motion.div>
                     )}
-                </AnimatePresence>
+                </AnimatePresence> */}
             </motion.nav>
 
             {/* Mobile Bottom Navigation */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-white/10">
-                <div className="flex items-center justify-around h-16">
-                    {navLinks.slice(0, 4).map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={`flex flex-col items-center gap-0.5 px-3 py-2 text-xs font-medium transition-colors ${pathname === link.href ? "text-marvel-red" : "text-white/50"
-                                }`}
-                        >
-                            <span className="text-lg">{link.label.charAt(0)}</span>
-                            <span>{link.label}</span>
-                        </Link>
-                    ))}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-white/10 pb-safe">
+                <div className="flex items-center justify-around h-16 px-2">
+                    {navLinks.slice(0, 4).map((link) => {
+                        const Icon = getIconForLabel(link.label);
+                        const isActive = pathname === link.href;
+
+                        return (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`flex flex-col items-center justify-center w-16 h-full gap-1 text-[10px] uppercase font-bold transition-all duration-300 ${isActive ? "text-marvel-red" : "text-white/50 hover:text-white/80"
+                                    }`}
+                            >
+                                <motion.div
+                                    whileTap={{ scale: 0.9 }}
+                                    animate={{
+                                        y: isActive ? -2 : 0,
+                                        scale: isActive ? 1.1 : 1
+                                    }}
+                                    className={`relative p-1.5 rounded-full ${isActive ? 'bg-marvel-red/10' : ''}`}
+                                >
+                                    <Icon size={isActive ? 22 : 20} strokeWidth={isActive ? 2.5 : 2} />
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="mobile-nav-indicator"
+                                            className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-marvel-red"
+                                        />
+                                    )}
+                                </motion.div>
+                                <span className={`${isActive ? "opacity-100" : "opacity-70"} tracking-wider`}>{link.label}</span>
+                            </Link>
+                        );
+                    })}
                     <button
                         onClick={() => setIsOpen(true)}
-                        className="flex flex-col items-center gap-0.5 px-3 py-2 text-xs font-medium text-white/50"
+                        className="flex flex-col items-center justify-center w-16 h-full gap-1 text-[10px] uppercase font-bold text-white/50 hover:text-white/80 transition-all duration-300"
                         aria-label="Open menu"
                     >
-                        <Menu size={20} />
-                        <span>More</span>
+                        <motion.div whileTap={{ scale: 0.9 }} className="p-1.5 rounded-full">
+                            <Menu size={20} strokeWidth={2} />
+                        </motion.div>
+                        <span className="opacity-70 tracking-wider">More</span>
                     </button>
                 </div>
             </div>
@@ -222,14 +240,6 @@ export default function Navbar() {
                                 ))}
                             </nav>
                             <div className="mt-auto flex items-center gap-4">
-                                <button
-                                    onClick={toggleMute}
-                                    className="flex items-center gap-2 text-white/60"
-                                    aria-label={muted ? "Unmute" : "Mute"}
-                                >
-                                    {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                                    <span className="text-sm">{muted ? "Unmuted" : "Muted"}</span>
-                                </button>
                             </div>
                         </div>
                     </motion.div>

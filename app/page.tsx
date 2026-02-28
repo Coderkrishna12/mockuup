@@ -19,12 +19,15 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Removed local Phase 6 data, now loaded from data/movies
+
 const phases = [
   { num: 1, title: "Phase One", subtitle: "The Beginning", years: "2008–2012", color: "#3B82F6", movies: movies.filter((m) => m.phase === 1) },
   { num: 2, title: "Phase Two", subtitle: "Expansion", years: "2013–2015", color: "#EF4444", movies: movies.filter((m) => m.phase === 2) },
   { num: 3, title: "Phase Three", subtitle: "Infinity Saga", years: "2016–2019", color: "#FFD700", movies: movies.filter((m) => m.phase === 3) },
   { num: 4, title: "Phase Four", subtitle: "Multiverse Saga", years: "2021–2022", color: "#A855F7", movies: movies.filter((m) => m.phase === 4) },
   { num: 5, title: "Phase Five", subtitle: "New Era", years: "2023–2024", color: "#EC4899", movies: movies.filter((m) => m.phase === 5) },
+  { num: 6, title: "Phase Six", subtitle: "Upcoming — The Grand Finale", years: "2025–2027", color: "#14B8A6", movies: movies.filter((m) => m.phase === 6) },
 ];
 
 const featuredMovies = movies.filter((m) =>
@@ -164,7 +167,7 @@ export default function HomePage() {
                       {phase.years}
                     </span>
                   </div>
-                  <h3 className="font-heading text-5xl md:text-7xl text-white tracking-wider">
+                  <h3 className="font-heading text-4xl sm:text-5xl md:text-7xl text-white tracking-wider">
                     {phase.title}
                   </h3>
                   <p className="text-lg text-white/40 mt-1">{phase.subtitle}</p>
@@ -255,7 +258,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="font-heading text-5xl md:text-7xl text-white tracking-wider mb-4">
+            <h2 className="font-heading text-4xl sm:text-5xl md:text-7xl text-white tracking-wider mb-4">
               THE STORY <span className="text-marvel-red text-glow-red">CONTINUES</span>
             </h2>
             <p className="text-white/40 max-w-lg mx-auto mb-8">

@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // devIndicators: {
+  //   position: "top-right",
+  // },
   // Suppress hydration warnings from browser extensions
   reactStrictMode: true,
 };
