@@ -1,285 +1,53 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Camera, CameraOff, Volume2, VolumeX, ChevronLeft, ChevronRight,
-    Sparkles, Maximize, Minimize, ArrowLeft, Crosshair, Shield,
-    Zap, Target, Eye
+    Sparkles, Maximize, Minimize, ArrowLeft, Eye
 } from "lucide-react";
 import Link from "next/link";
 import { characters, type Character } from "@/data/characters";
+import { getDialogueForCharacter, type DialogueLine } from "@/data/characterDialogues";
 import { audioManager } from "@/lib/audio";
 
 /* ═══════════════════════════════════════════════════════════════
-   CHARACTER MASK DEFINITIONS — what to draw on face per character
+   MASK ALIGNMENT CONFIG — defines how each PNG sits relative to face
    ═══════════════════════════════════════════════════════════════ */
-interface CharacterMask {
+type MaskPlacement = "face" | "forehead" | "neck";
+
+interface MaskConfig {
+    id: string;
     name: string;
-    maskColor: string;
-    glowColor: string;
-    eyeColor: string;
-    drawMask: (ctx: CanvasRenderingContext2D, w: number, h: number, cx: number, cy: number, faceW: number, faceH: number, t: number) => void;
+    maskFile: string;
+    placement: MaskPlacement;
+    // Scale relative to face bounding box (1.0 = exactly face size)
+    scaleX: number;
+    scaleY: number;
+    // Offset from face center as fraction of face dimensions
+    offsetY: number; // positive = down, negative = up
+    // Opacity of the mask overlay
+    opacity: number;
+    // Accent color for HUD elements
+    color: string;
 }
 
-const characterMasks: Record<string, CharacterMask> = {
-    "iron-man": {
-        name: "Iron Man Helmet",
-        maskColor: "#B22222",
-        glowColor: "#FFD700",
-        eyeColor: "#87CEEB",
-        drawMask: (ctx, w, h, cx, cy, fw, fh, t) => {
-            // Helmet shape
-            ctx.save();
-            ctx.beginPath();
-            ctx.ellipse(cx, cy - fh * 0.05, fw * 0.55, fh * 0.65, 0, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(178, 34, 34, 0.5)";
-            ctx.fill();
-            ctx.strokeStyle = "rgba(255, 215, 0, 0.6)";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Face plate
-            ctx.beginPath();
-            ctx.moveTo(cx - fw * 0.35, cy - fh * 0.1);
-            ctx.lineTo(cx - fw * 0.15, cy + fh * 0.35);
-            ctx.lineTo(cx + fw * 0.15, cy + fh * 0.35);
-            ctx.lineTo(cx + fw * 0.35, cy - fh * 0.1);
-            ctx.closePath();
-            ctx.fillStyle = "rgba(255, 215, 0, 0.3)";
-            ctx.fill();
-            ctx.strokeStyle = "rgba(255, 215, 0, 0.7)";
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            // Eye slits
-            const eyeGlow = 0.7 + Math.sin(t * 4) * 0.3;
-            ctx.fillStyle = `rgba(135, 206, 235, ${eyeGlow})`;
-            ctx.shadowColor = "#87CEEB";
-            ctx.shadowBlur = 15;
-            // Left eye
-            ctx.beginPath();
-            ctx.moveTo(cx - fw * 0.28, cy - fh * 0.08);
-            ctx.lineTo(cx - fw * 0.08, cy - fh * 0.12);
-            ctx.lineTo(cx - fw * 0.08, cy - fh * 0.02);
-            ctx.closePath();
-            ctx.fill();
-            // Right eye
-            ctx.beginPath();
-            ctx.moveTo(cx + fw * 0.28, cy - fh * 0.08);
-            ctx.lineTo(cx + fw * 0.08, cy - fh * 0.12);
-            ctx.lineTo(cx + fw * 0.08, cy - fh * 0.02);
-            ctx.closePath();
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            // Arc reactor glow on chin area
-            ctx.beginPath();
-            ctx.arc(cx, cy + fh * 0.5, fw * 0.08, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(135, 206, 235, ${0.3 + Math.sin(t * 3) * 0.2})`;
-            ctx.shadowColor = "#87CEEB";
-            ctx.shadowBlur = 20;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.restore();
-        },
-    },
-    "spider-man": {
-        name: "Spider-Man Mask",
-        maskColor: "#CC0000",
-        glowColor: "#FFFFFF",
-        eyeColor: "#FFFFFF",
-        drawMask: (ctx, w, h, cx, cy, fw, fh, t) => {
-            ctx.save();
-            // Red mask
-            ctx.beginPath();
-            ctx.ellipse(cx, cy, fw * 0.52, fh * 0.6, 0, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(204, 0, 0, 0.45)";
-            ctx.fill();
-
-            // Web pattern
-            ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
-            ctx.lineWidth = 1;
-            for (let i = 0; i < 8; i++) {
-                const angle = (i / 8) * Math.PI * 2;
-                ctx.beginPath();
-                ctx.moveTo(cx, cy - fh * 0.1);
-                ctx.lineTo(cx + Math.cos(angle) * fw * 0.55, cy - fh * 0.1 + Math.sin(angle) * fh * 0.6);
-                ctx.stroke();
-            }
-            // Concentric web rings
-            for (let r = 0.15; r < 0.6; r += 0.12) {
-                ctx.beginPath();
-                ctx.ellipse(cx, cy, fw * r, fh * r * 0.9, 0, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-
-            // Eyes (large white eye shapes)
-            ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-            ctx.shadowColor = "#FFFFFF";
-            ctx.shadowBlur = 10;
-            // Left
-            ctx.beginPath();
-            ctx.ellipse(cx - fw * 0.18, cy - fh * 0.08, fw * 0.14, fh * 0.12, -0.15, 0, Math.PI * 2);
-            ctx.fill();
-            // Right
-            ctx.beginPath();
-            ctx.ellipse(cx + fw * 0.18, cy - fh * 0.08, fw * 0.14, fh * 0.12, 0.15, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Black eye borders
-            ctx.strokeStyle = "rgba(0, 0, 0, 0.6)";
-            ctx.lineWidth = 2;
-            ctx.shadowBlur = 0;
-            ctx.beginPath();
-            ctx.ellipse(cx - fw * 0.18, cy - fh * 0.08, fw * 0.14, fh * 0.12, -0.15, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.ellipse(cx + fw * 0.18, cy - fh * 0.08, fw * 0.14, fh * 0.12, 0.15, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.restore();
-        },
-    },
-    "doctor-strange": {
-        name: "Eye of Agamotto",
-        maskColor: "#A855F7",
-        glowColor: "#FFD700",
-        eyeColor: "#22C55E",
-        drawMask: (ctx, w, h, cx, cy, fw, fh, t) => {
-            ctx.save();
-            // Mystical aura around head
-            const auraRadius = fw * 0.65 + Math.sin(t * 2) * fw * 0.05;
-            const grad = ctx.createRadialGradient(cx, cy, fw * 0.3, cx, cy, auraRadius);
-            grad.addColorStop(0, "rgba(168, 85, 247, 0)");
-            grad.addColorStop(0.7, "rgba(168, 85, 247, 0.1)");
-            grad.addColorStop(1, "rgba(168, 85, 247, 0.2)");
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(cx, cy, auraRadius, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Eye of Agamotto at neck
-            const eyeY = cy + fh * 0.45;
-            ctx.beginPath();
-            ctx.arc(cx, eyeY, fw * 0.12, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 215, 0, ${0.4 + Math.sin(t * 3) * 0.3})`;
-            ctx.shadowColor = "#FFD700";
-            ctx.shadowBlur = 25;
-            ctx.fill();
-            // Inner eye
-            ctx.beginPath();
-            ctx.arc(cx, eyeY, fw * 0.05, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(34, 197, 94, ${0.6 + Math.sin(t * 5) * 0.3})`;
-            ctx.shadowColor = "#22C55E";
-            ctx.shadowBlur = 15;
-            ctx.fill();
-
-            // Mandala circles
-            ctx.strokeStyle = `rgba(255, 215, 0, ${0.3 + Math.sin(t * 2) * 0.2})`;
-            ctx.lineWidth = 1;
-            ctx.shadowBlur = 0;
-            for (let i = 0; i < 3; i++) {
-                ctx.beginPath();
-                ctx.arc(cx, cy, fw * (0.55 + i * 0.08), t * (0.5 + i * 0.2), t * (0.5 + i * 0.2) + Math.PI * 1.5);
-                ctx.stroke();
-            }
-            ctx.restore();
-        },
-    },
-};
-
-// Default mask for characters without a specific design
-const defaultMask: CharacterMask = {
-    name: "Power Aura",
-    maskColor: "#ED1D24",
-    glowColor: "#FFD700",
-    eyeColor: "#FFFFFF",
-    drawMask: (ctx, w, h, cx, cy, fw, fh, t) => {
-        ctx.save();
-        // Generic energy aura
-        const grad = ctx.createRadialGradient(cx, cy, fw * 0.2, cx, cy, fw * 0.7);
-        grad.addColorStop(0, "rgba(237, 29, 36, 0)");
-        grad.addColorStop(0.5, `rgba(237, 29, 36, ${0.1 + Math.sin(t * 2) * 0.05})`);
-        grad.addColorStop(1, "rgba(237, 29, 36, 0.15)");
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(cx, cy, fw * 0.7, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Eye glow
-        ctx.fillStyle = `rgba(255, 215, 0, ${0.4 + Math.sin(t * 4) * 0.3})`;
-        ctx.shadowColor = "#FFD700";
-        ctx.shadowBlur = 12;
-        ctx.beginPath();
-        ctx.ellipse(cx - fw * 0.18, cy - fh * 0.08, fw * 0.06, fh * 0.03, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(cx + fw * 0.18, cy - fh * 0.08, fw * 0.06, fh * 0.03, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.restore();
-    },
-};
-
-/* ═══════════════════════════════════════════════════════════════
-   CHARACTER VOICE LINES — quotes per character for voice system
-   ═══════════════════════════════════════════════════════════════ */
-const characterVoiceLines: Record<string, string[]> = {
-    "iron-man": ["I am Iron Man.", "Avengers, assemble.", "I love you three thousand.", "Sometimes you gotta run before you can walk."],
-    "captain-america": ["I can do this all day.", "Avengers, assemble.", "I'm with you to the end of the line.", "The price of freedom is high."],
-    "thor": ["I'm still worthy!", "Bring me Thanos!", "Another!", "Because that's what heroes do."],
-    "hulk": ["Hulk smash!", "I'm always angry.", "Puny god.", "I see this as an absolute win!"],
-    "spider-man": ["With great power comes great responsibility.", "I'm Spider-Man.", "Hey everyone.", "Mr. Stark, I don't feel so good."],
-    "doctor-strange": ["Dormammu, I've come to bargain.", "We're in the endgame now.", "It was the only way.", "The Multiverse is real."],
-    "black-panther": ["Wakanda forever!", "I never freeze.", "In times of crisis, the wise build bridges.", "The Black Panther lives."],
-    "black-widow": ["I've got red in my ledger.", "We have what we have when we have it.", "I'm always picking up after you boys.", "Whatever it takes."],
-    "scarlet-witch": ["You took everything from me.", "I don't need you to tell me who I am.", "I can't feel you.", "You break the rules and become a hero."],
-    "thanos": ["I am inevitable.", "Perfectly balanced, as all things should be.", "Dread it. Run from it.", "Fine, I'll do it myself."],
-    "loki": ["I am burdened with glorious purpose.", "Kneel before me.", "The sun will shine on us again.", "I assure you, brother."],
-    "star-lord": ["I'm Star-Lord, man.", "We're the freakin' Guardians of the Galaxy.", "I'm gonna make some weird stuff.", "Dance off, bro."],
-};
-
-/* ═══════════════════════════════════════════════════════════════
-   VOICE NARRATOR HOOK
-   ═══════════════════════════════════════════════════════════════ */
-function useVoiceNarrator() {
-    const [speaking, setSpeaking] = useState(false);
-    const [supported, setSupported] = useState(false);
-
-    useEffect(() => {
-        setSupported(typeof window !== "undefined" && "speechSynthesis" in window);
-        // Load voices
-        if (typeof window !== "undefined" && "speechSynthesis" in window) {
-            window.speechSynthesis.getVoices();
-        }
-    }, []);
-
-    const speak = useCallback((text: string) => {
-        if (!supported) return;
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.85;
-        utterance.pitch = 0.9;
-        utterance.volume = 0.9;
-        const voices = window.speechSynthesis.getVoices();
-        const preferred = voices.find(v =>
-            v.name.includes("Daniel") || v.name.includes("Google UK English Male") ||
-            v.name.includes("Microsoft David") || v.name.includes("Alex")
-        ) || voices.find(v => v.lang.startsWith("en")) || voices[0];
-        if (preferred) utterance.voice = preferred;
-        utterance.onstart = () => setSpeaking(true);
-        utterance.onend = () => setSpeaking(false);
-        utterance.onerror = () => setSpeaking(false);
-        window.speechSynthesis.speak(utterance);
-    }, [supported]);
-
-    const stop = useCallback(() => {
-        if (supported) { window.speechSynthesis.cancel(); setSpeaking(false); }
-    }, [supported]);
-
-    return { speak, stop, speaking, supported };
-}
+const MASK_CONFIGS: MaskConfig[] = [
+    // Full face masks — cover entire face, centered on detected face
+    { id: "iron-man", name: "Iron Man Helmet", maskFile: "/characters/masks/iron-man.png", placement: "face", scaleX: 1.5, scaleY: 1.6, offsetY: -0.05, opacity: 0.92, color: "#B22222" },
+    { id: "spider-man", name: "Spider-Man Mask", maskFile: "/characters/masks/spider-man.png", placement: "face", scaleX: 1.4, scaleY: 1.5, offsetY: -0.05, opacity: 0.90, color: "#CC0000" },
+    { id: "captain-america", name: "Captain America Cowl", maskFile: "/characters/masks/captain-america.png", placement: "face", scaleX: 1.5, scaleY: 1.6, offsetY: -0.05, opacity: 0.90, color: "#2563EB" },
+    { id: "black-panther", name: "Black Panther Mask", maskFile: "/characters/masks/black-panther.png", placement: "face", scaleX: 1.5, scaleY: 1.6, offsetY: -0.05, opacity: 0.90, color: "#7C3AED" },
+    { id: "hulk", name: "Hulk Face", maskFile: "/characters/masks/hulk.png", placement: "face", scaleX: 1.6, scaleY: 1.6, offsetY: -0.05, opacity: 0.85, color: "#22C55E" },
+    { id: "thanos", name: "Thanos Face", maskFile: "/characters/masks/thanos.png", placement: "face", scaleX: 1.6, scaleY: 1.7, offsetY: -0.05, opacity: 0.88, color: "#7C3AED" },
+    { id: "ant-man", name: "Ant-Man Helmet", maskFile: "/characters/masks/ant-man.png", placement: "face", scaleX: 1.5, scaleY: 1.6, offsetY: -0.05, opacity: 0.90, color: "#DC2626" },
+    { id: "war-machine", name: "War Machine Helmet", maskFile: "/characters/masks/war-machine.png", placement: "face", scaleX: 1.5, scaleY: 1.6, offsetY: -0.05, opacity: 0.90, color: "#6B7280" },
+    // Forehead helmet — positioned higher, covers top of head
+    { id: "thor", name: "Thor's Winged Helm", maskFile: "/characters/masks/thor.png", placement: "forehead", scaleX: 1.8, scaleY: 1.3, offsetY: -0.45, opacity: 0.88, color: "#3B82F6" },
+    // Necklace — positioned at neck/chest area, below face
+    { id: "doctor-strange", name: "Eye of Agamotto", maskFile: "/characters/masks/doctor-strange.png", placement: "neck", scaleX: 0.8, scaleY: 0.6, offsetY: 0.85, opacity: 0.92, color: "#A855F7" },
+];
 
 /* ═══════════════════════════════════════════════════════════════
    WEBCAM HOOK
@@ -323,18 +91,18 @@ function useWebcam() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   AR HUD OVERLAY — drawn on canvas over webcam
+   HUD OVERLAY — scanlines, brackets, reticle, stats (NO mask drawing)
    ═══════════════════════════════════════════════════════════════ */
 function ARHUDOverlay({
     character,
     speaking,
     maskActive,
-    helmetClosing,
+    color,
 }: {
     character: Character;
     speaking: boolean;
     maskActive: boolean;
-    helmetClosing: boolean;
+    color: string;
 }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const frameRef = useRef<number>(0);
@@ -357,7 +125,14 @@ function ARHUDOverlay({
         const h = canvas.clientHeight;
         let time = 0;
 
-        // Floating particles
+        // Determine primary colour as RGB
+        const hexToRGB = (hex: string) => {
+            const c = hex.replace("#", "");
+            return `${parseInt(c.slice(0, 2), 16)},${parseInt(c.slice(2, 4), 16)},${parseInt(c.slice(4, 6), 16)}`;
+        };
+        const primaryRGB = hexToRGB(color);
+
+        // Particles
         const particles: { x: number; y: number; vx: number; vy: number; r: number; life: number; maxLife: number }[] = [];
         for (let i = 0; i < 50; i++) {
             particles.push({
@@ -367,49 +142,34 @@ function ARHUDOverlay({
             });
         }
 
-        const mask = characterMasks[character.id] || defaultMask;
-        const primaryRGB = mask.maskColor === "#B22222" ? "178,34,34" :
-            mask.maskColor === "#CC0000" ? "204,0,0" :
-                mask.maskColor === "#A855F7" ? "168,85,247" : "237,29,36";
-
         function draw() {
             if (!ctx) return;
             ctx.clearRect(0, 0, w, h);
             time += 0.016;
 
-            // === Corner brackets ===
-            const m = 30;
-            const bSize = 50;
+            // Corner brackets
+            const m = 30, bSize = 50;
             ctx.strokeStyle = `rgba(${primaryRGB},0.5)`;
             ctx.lineWidth = 2;
-            [[m, m, m + bSize, m, m, m + bSize], [w - m, m, w - m - bSize, m, w - m, m + bSize],
-            [m, h - m, m + bSize, h - m, m, h - m - bSize], [w - m, h - m, w - m - bSize, h - m, w - m, h - m - bSize]]
+            ([[m, m, m + bSize, m, m, m + bSize], [w - m, m, w - m - bSize, m, w - m, m + bSize],
+            [m, h - m, m + bSize, h - m, m, h - m - bSize], [w - m, h - m, w - m - bSize, h - m, w - m, h - m - bSize]] as number[][])
                 .forEach(([x1, y1, x2, y2, x3, y3]) => {
-                    ctx.beginPath();
-                    ctx.moveTo(x2, y2);
-                    ctx.lineTo(x1, y1);
-                    ctx.lineTo(x3, y3);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x1, y1); ctx.lineTo(x3, y3); ctx.stroke();
                 });
 
-            // === Scanning line ===
+            // Scanning line
             const scanY = (time * 60) % h;
             ctx.strokeStyle = `rgba(${primaryRGB},0.12)`;
             ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(0, scanY);
-            ctx.lineTo(w, scanY);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, scanY); ctx.lineTo(w, scanY); ctx.stroke();
 
-            // === Target reticle (center) ===
-            const cx = w / 2;
-            const cy = h / 2;
+            // Target reticle
+            const cx = w / 2, cy = h / 2;
             const rSize = 45 + (speaking ? Math.sin(time * 6) * 15 : Math.sin(time * 2) * 5);
             ctx.strokeStyle = `rgba(${primaryRGB},0.4)`;
             ctx.lineWidth = 1;
             ctx.beginPath(); ctx.arc(cx, cy, rSize, 0, Math.PI * 2); ctx.stroke();
             ctx.beginPath(); ctx.arc(cx, cy, rSize * 0.5, 0, Math.PI * 2); ctx.stroke();
-            // Crosshairs
             const gap = 12;
             ctx.beginPath();
             ctx.moveTo(cx - rSize - 8, cy); ctx.lineTo(cx - gap, cy);
@@ -418,24 +178,7 @@ function ARHUDOverlay({
             ctx.moveTo(cx, cy + gap); ctx.lineTo(cx, cy + rSize + 8);
             ctx.stroke();
 
-            // === Character face mask overlay ===
-            if (maskActive) {
-                const faceW = w * 0.28;
-                const faceH = h * 0.4;
-                mask.drawMask(ctx, w, h, cx, cy - h * 0.05, faceW, faceH, time);
-            }
-
-            // === Helmet closing animation ===
-            if (helmetClosing) {
-                const progress = Math.min(1, (time % 3) / 1.5);
-                const topY = cy - h * 0.25 + (cy - h * 0.05) * progress * 0.5;
-                const botY = cy + h * 0.25 - (cy + h * 0.05) * progress * 0.3;
-                ctx.fillStyle = `rgba(${primaryRGB}, ${0.3 * progress})`;
-                ctx.fillRect(cx - w * 0.2, 0, w * 0.4, topY);
-                ctx.fillRect(cx - w * 0.2, botY, w * 0.4, h - botY);
-            }
-
-            // === Top-left info HUD ===
+            // Top-left character info
             ctx.font = "bold 13px Inter, sans-serif";
             ctx.fillStyle = `rgba(${primaryRGB},0.9)`;
             ctx.textAlign = "left";
@@ -445,9 +188,7 @@ function ARHUDOverlay({
             ctx.fillText(character.alias, m + 8, m + bSize + 36);
 
             // Power bar
-            const barX = m + 8;
-            const barY = m + bSize + 46;
-            const barW = 130;
+            const barX = m + 8, barY = m + bSize + 46, barW = 130;
             const avgP = Math.round(Object.values(character.stats).reduce((a: number, b: number) => a + b, 0) / 6);
             ctx.fillStyle = "rgba(255,255,255,0.08)";
             ctx.fillRect(barX, barY, barW, 4);
@@ -457,7 +198,7 @@ function ARHUDOverlay({
             ctx.fillStyle = `rgba(${primaryRGB},0.8)`;
             ctx.fillText(`PWR ${avgP}%`, barX + barW + 8, barY + 4);
 
-            // === Energy bars (right side) ===
+            // Right-side stat bars
             const stats = Object.entries(character.stats);
             const statBarX = w - m - 120;
             stats.forEach(([key, val], i) => {
@@ -472,7 +213,7 @@ function ARHUDOverlay({
                 ctx.fillRect(statBarX, y, 100 * ((val as number) / 100), 5);
             });
 
-            // === Voice glow pulse ===
+            // Voice glow pulse
             if (speaking) {
                 const pulseR = 60 + Math.sin(time * 8) * 20;
                 const grad = ctx.createRadialGradient(cx, cy + h * 0.3, 0, cx, cy + h * 0.3, pulseR);
@@ -482,7 +223,7 @@ function ARHUDOverlay({
                 ctx.beginPath(); ctx.arc(cx, cy + h * 0.3, pulseR, 0, Math.PI * 2); ctx.fill();
             }
 
-            // === Particles ===
+            // Particles
             particles.forEach(p => {
                 p.x += p.vx; p.y += p.vy; p.life++;
                 if (p.life > p.maxLife || p.x < 0 || p.x > w || p.y < 0 || p.y > h) {
@@ -494,7 +235,7 @@ function ARHUDOverlay({
                 ctx.fill();
             });
 
-            // === Timestamp ===
+            // Timestamp
             ctx.font = "9px monospace";
             ctx.fillStyle = "rgba(255,255,255,0.25)";
             ctx.textAlign = "right";
@@ -504,7 +245,7 @@ function ARHUDOverlay({
                 w - m - 8, h - m - 8
             );
 
-            // === Status indicator ===
+            // Status
             ctx.textAlign = "left";
             ctx.fillStyle = maskActive ? "rgba(34,197,94,0.6)" : "rgba(255,255,255,0.3)";
             ctx.font = "9px monospace";
@@ -515,13 +256,159 @@ function ARHUDOverlay({
 
         frameRef.current = requestAnimationFrame(draw);
         return () => { cancelAnimationFrame(frameRef.current); window.removeEventListener("resize", resize); };
-    }, [character, speaking, maskActive, helmetClosing]);
+    }, [character, speaking, maskActive, color]);
 
     return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-10" />;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   VOICE COMMAND BOX
+   MASK CANVAS — draws face-tracked PNG mask on top of video
+   ═══════════════════════════════════════════════════════════════ */
+function MaskOverlayCanvas({
+    videoRef,
+    maskConfig,
+    active,
+}: {
+    videoRef: React.RefObject<HTMLVideoElement | null>;
+    maskConfig: MaskConfig;
+    active: boolean;
+}) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const animRef = useRef<number>(0);
+    const maskImgRef = useRef<HTMLImageElement | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const detectorRef = useRef<any>(null);
+    const detectorReadyRef = useRef(false);
+
+    // Load mask image whenever config changes
+    useEffect(() => {
+        const img = new window.Image();
+        img.crossOrigin = "anonymous";
+        img.src = maskConfig.maskFile;
+        img.onload = () => { maskImgRef.current = img; };
+        img.onerror = () => { maskImgRef.current = null; };
+    }, [maskConfig.maskFile]);
+
+    // Init MediaPipe face detector once
+    useEffect(() => {
+        let cancelled = false;
+
+        async function init() {
+            try {
+                const vision = await import("@mediapipe/tasks-vision");
+                const { FaceDetector, FilesetResolver } = vision;
+                const fileset = await FilesetResolver.forVisionTasks(
+                    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+                );
+                const detector = await FaceDetector.createFromOptions(fileset, {
+                    baseOptions: {
+                        modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
+                        delegate: "GPU",
+                    },
+                    runningMode: "VIDEO",
+                    minDetectionConfidence: 0.5,
+                });
+                if (!cancelled) {
+                    detectorRef.current = detector;
+                    detectorReadyRef.current = true;
+                }
+            } catch (err) {
+                console.warn("Face detector init failed:", err);
+                if (!cancelled) detectorReadyRef.current = true; // fallback
+            }
+        }
+
+        init();
+        return () => { cancelled = true; };
+    }, []);
+
+    // Render loop
+    useEffect(() => {
+        if (!active) return;
+        const canvas = canvasRef.current;
+        const video = videoRef.current;
+        if (!canvas || !video) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        let running = true;
+
+        const renderFrame = () => {
+            if (!running) return;
+            if (!video.videoWidth || !video.videoHeight) {
+                animRef.current = requestAnimationFrame(renderFrame);
+                return;
+            }
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const W = canvas.width;
+            const H = canvas.height;
+
+            // Face detection
+            let faceX = W * 0.3;
+            let faceY = H * 0.15;
+            let faceW = W * 0.4;
+            let faceH = H * 0.55;
+
+            if (detectorRef.current && detectorReadyRef.current) {
+                try {
+                    const result = detectorRef.current.detectForVideo(video, performance.now());
+                    if (result.detections && result.detections.length > 0) {
+                        const d = result.detections[0];
+                        if (d.boundingBox) {
+                            // Mirror the x coordinate since video is flipped
+                            faceX = W - (d.boundingBox.originX + d.boundingBox.width);
+                            faceY = d.boundingBox.originY;
+                            faceW = d.boundingBox.width;
+                            faceH = d.boundingBox.height;
+                        }
+                    }
+                } catch {
+                    // Use defaults
+                }
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            if (maskImgRef.current) {
+                // Calculate mask position based on placement type
+                const faceCX = faceX + faceW / 2;
+                const faceCY = faceY + faceH / 2;
+
+                const maskW = faceW * maskConfig.scaleX;
+                const maskH = faceH * maskConfig.scaleY;
+                const maskX = faceCX - maskW / 2;
+                const maskY = faceCY - maskH / 2 + faceH * maskConfig.offsetY;
+
+                ctx.globalAlpha = maskConfig.opacity;
+                ctx.drawImage(maskImgRef.current, maskX, maskY, maskW, maskH);
+                ctx.globalAlpha = 1;
+            }
+
+            animRef.current = requestAnimationFrame(renderFrame);
+        };
+
+        animRef.current = requestAnimationFrame(renderFrame);
+        return () => {
+            running = false;
+            if (animRef.current) cancelAnimationFrame(animRef.current);
+        };
+    }, [active, videoRef, maskConfig]);
+
+    if (!active) return null;
+    return (
+        <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full z-[5] pointer-events-none"
+            style={{ transform: "scaleX(-1)", objectFit: "cover" }}
+        />
+    );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VOICE COMMAND BOX — plays real MP3 files only
    ═══════════════════════════════════════════════════════════════ */
 function VoiceCommandBox({
     line,
@@ -529,7 +416,7 @@ function VoiceCommandBox({
     active,
     color,
 }: {
-    line: string;
+    line: DialogueLine;
     onClick: () => void;
     active: boolean;
     color: string;
@@ -537,14 +424,30 @@ function VoiceCommandBox({
     return (
         <button
             onClick={onClick}
-            className={`px-3 py-2 rounded-lg text-xs font-medium transition-all border whitespace-nowrap ${active
-                    ? "text-white shadow-lg"
-                    : "border-white/10 text-white/50 hover:text-white hover:border-white/30"
+            className={`px-4 py-3 rounded-xl text-sm font-bold transition-all border-2 whitespace-nowrap flex items-center gap-2.5 ${active
+                ? "text-white shadow-xl scale-105"
+                : "border-white/10 bg-black/40 backdrop-blur-lg text-white/70 hover:text-white hover:border-white/30 hover:bg-white/5"
                 }`}
-            style={active ? { borderColor: color, backgroundColor: `${color}30`, boxShadow: `0 0 15px ${color}30` } : {}}
+            style={active ? { borderColor: color, backgroundColor: `${color}25`, boxShadow: `0 0 25px ${color}40, inset 0 0 15px ${color}10` } : {}}
         >
-            {active && <span className="inline-block w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse" />}
-            &ldquo;{line}&rdquo;
+            {active ? (
+                <span className="flex gap-[3px] items-end h-4">
+                    {[0, 1, 2, 3].map((i) => (
+                        <span
+                            key={i}
+                            className="w-[3px] rounded-full"
+                            style={{
+                                backgroundColor: color,
+                                animation: `waveform 0.6s ease-in-out ${i * 0.1}s infinite alternate`,
+                                height: `${8 + Math.random() * 8}px`,
+                            }}
+                        />
+                    ))}
+                </span>
+            ) : (
+                <Volume2 size={14} className="opacity-50 shrink-0" />
+            )}
+            <span>{line.label}</span>
         </button>
     );
 }
@@ -553,33 +456,32 @@ function VoiceCommandBox({
    CHARACTER SELECTOR CARD
    ═══════════════════════════════════════════════════════════════ */
 function CharacterSelectorCard({
-    char,
+    maskCfg,
     selected,
     onClick,
 }: {
-    char: Character;
+    maskCfg: MaskConfig;
     selected: boolean;
     onClick: () => void;
 }) {
     return (
         <button
             onClick={onClick}
-            className={`flex-shrink-0 w-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${selected ? "border-marvel-red scale-105 shadow-lg shadow-marvel-red/20" : "border-white/10 hover:border-white/30"
+            className={`flex-shrink-0 w-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${selected ? "scale-105 shadow-lg" : "border-white/10 hover:border-white/30"
                 }`}
+            style={selected ? { borderColor: maskCfg.color, boxShadow: `0 0 15px ${maskCfg.color}40` } : {}}
         >
-            <div className="relative w-full aspect-[3/4] bg-black/60">
+            <div className="relative w-full aspect-[3/4] bg-black/60 flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                    src={char.imageUrl}
-                    alt={char.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                        e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg";
-                        e.currentTarget.className = "w-full h-full object-contain p-2 opacity-30";
-                    }}
+                    src={maskCfg.maskFile}
+                    alt={maskCfg.name}
+                    className="w-full h-full object-contain p-1"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                <p className="absolute bottom-1 left-1 right-1 text-[8px] text-white font-bold truncate text-center">{char.name}</p>
+                <p className="absolute bottom-1 left-1 right-1 text-[8px] text-white font-bold truncate text-center">
+                    {maskCfg.name.split(" ")[0]}
+                </p>
             </div>
         </button>
     );
@@ -588,64 +490,63 @@ function CharacterSelectorCard({
 /* ═══════════════════════════════════════════════════════════════
    MAIN AR EXPERIENCE PAGE
    ═══════════════════════════════════════════════════════════════ */
-export default function ARExperiencePage() {
+function ARPageInner() {
     const searchParams = useSearchParams();
     const webcam = useWebcam();
-    const narrator = useVoiceNarrator();
     const containerRef = useRef<HTMLDivElement>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Initialize from URL param
     const initialCharId = searchParams.get("character") || "iron-man";
-    const initialIndex = Math.max(0, characters.findIndex(c => c.id === initialCharId));
-    const [selectedChar, setSelectedChar] = useState<Character>(characters[initialIndex] || characters[0]);
-    const [charIndex, setCharIndex] = useState(initialIndex);
+    const initialIndex = Math.max(0, MASK_CONFIGS.findIndex(c => c.id === initialCharId));
+    const [selectedIdx, setSelectedIdx] = useState(initialIndex);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [maskActive, setMaskActive] = useState(false);
-    const [helmetClosing, setHelmetClosing] = useState(false);
-    const [activeVoiceLine, setActiveVoiceLine] = useState<string | null>(null);
+    const [playingId, setPlayingId] = useState<string | null>(null);
+    const [subtitle, setSubtitle] = useState<string | null>(null);
     const [muted, setMuted] = useState(false);
 
-    const topCharacters = characters.slice(0, 20);
-    const voiceLines = characterVoiceLines[selectedChar.id] || selectedChar.quotes.slice(0, 4);
-    const mask = characterMasks[selectedChar.id] || defaultMask;
+    const currentMask = MASK_CONFIGS[selectedIdx];
+    const selectedChar = useMemo(() =>
+        characters.find(c => c.id === currentMask.id) || characters[0],
+        [currentMask.id]
+    );
+    const dialogue = getDialogueForCharacter(currentMask.id);
 
-    const selectCharacter = (char: Character, index: number) => {
-        setSelectedChar(char);
-        setCharIndex(index);
+    const selectMask = (index: number) => {
+        setSelectedIdx(index);
         setMaskActive(false);
-        setHelmetClosing(false);
-        setActiveVoiceLine(null);
-        narrator.stop();
+        stopAudio();
         audioManager.playGlitch();
     };
 
-    const prevChar = () => {
-        const i = (charIndex - 1 + topCharacters.length) % topCharacters.length;
-        selectCharacter(topCharacters[i], i);
-    };
-    const nextChar = () => {
-        const i = (charIndex + 1) % topCharacters.length;
-        selectCharacter(topCharacters[i], i);
-    };
+    const prevChar = () => selectMask((selectedIdx - 1 + MASK_CONFIGS.length) % MASK_CONFIGS.length);
+    const nextChar = () => selectMask((selectedIdx + 1) % MASK_CONFIGS.length);
 
     const activateMask = () => {
-        setHelmetClosing(true);
-        setTimeout(() => {
-            setMaskActive(true);
-            setHelmetClosing(false);
-            // Auto-play first voice line
-            if (!muted && voiceLines.length > 0) {
-                setActiveVoiceLine(voiceLines[0]);
-                narrator.speak(voiceLines[0]);
-            }
-        }, 1500);
+        setMaskActive(true);
     };
 
-    const playVoiceLine = (line: string) => {
+    const stopAudio = useCallback(() => {
+        if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
+        setPlayingId(null);
+        setTimeout(() => setSubtitle(null), 400);
+    }, []);
+
+    const playVoiceLine = useCallback((line: DialogueLine) => {
         if (muted) return;
-        setActiveVoiceLine(line);
-        narrator.speak(line);
-    };
+        stopAudio();
+        const audio = new Audio(line.audioFile);
+        audioRef.current = audio;
+        setPlayingId(line.id);
+        setSubtitle(line.subtitle);
+        audio.play().catch(() => {
+            setTimeout(() => { setPlayingId(null); setSubtitle(null); }, 2500);
+        });
+        audio.onended = () => {
+            setTimeout(() => { setPlayingId(null); setSubtitle(null); }, 600);
+        };
+    }, [muted, stopAudio]);
 
     const toggleFullscreen = useCallback(() => {
         if (!containerRef.current) return;
@@ -656,6 +557,13 @@ export default function ARExperiencePage() {
             document.exitFullscreen();
             setIsFullscreen(false);
         }
+    }, []);
+
+    // Cleanup audio on unmount
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+        };
     }, []);
 
     return (
@@ -671,7 +579,7 @@ export default function ARExperiencePage() {
 
                 <div className="flex items-center gap-1.5">
                     <button
-                        onClick={() => setMuted(!muted)}
+                        onClick={() => { setMuted(!muted); if (!muted) stopAudio(); }}
                         className={`p-1.5 rounded-lg backdrop-blur-sm transition-all ${muted ? "bg-red-500/50 text-white" : "bg-black/40 text-white/60 hover:text-white"
                             }`}
                         title={muted ? "Unmute" : "Mute"}
@@ -715,24 +623,31 @@ export default function ARExperiencePage() {
                     </div>
                 )}
 
-                {/* AR HUD overlay */}
+                {/* PNG Mask overlay (tracked to face via MediaPipe) */}
+                <MaskOverlayCanvas
+                    videoRef={webcam.videoRef}
+                    maskConfig={currentMask}
+                    active={maskActive && webcam.active}
+                />
+
+                {/* HUD overlay */}
                 <ARHUDOverlay
                     character={selectedChar}
-                    speaking={narrator.speaking}
+                    speaking={!!playingId}
                     maskActive={maskActive}
-                    helmetClosing={helmetClosing}
+                    color={currentMask.color}
                 />
 
                 {/* Character poster (right side) */}
                 <AnimatePresence mode="wait">
                     <motion.div
-                        key={selectedChar.id}
+                        key={currentMask.id}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ duration: 0.4 }}
                         className="absolute bottom-40 right-4 w-40 h-52 md:w-48 md:h-64 z-20 rounded-xl overflow-hidden"
-                        style={{ boxShadow: `0 0 30px ${mask.maskColor}40` }}
+                        style={{ boxShadow: `0 0 30px ${currentMask.color}40` }}
                     >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -749,11 +664,11 @@ export default function ARExperiencePage() {
                             <p className="font-heading text-sm text-white tracking-wider">{selectedChar.name}</p>
                             <p className="text-[10px] text-white/50">{selectedChar.alias}</p>
                         </div>
-                        <div className="absolute inset-0 border-2 rounded-xl" style={{ borderColor: `${mask.maskColor}40` }} />
+                        <div className="absolute inset-0 border-2 rounded-xl" style={{ borderColor: `${currentMask.color}40` }} />
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Start prompt (when no camera and mask not active) */}
+                {/* Start prompt */}
                 {!webcam.active && !maskActive && (
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -766,7 +681,11 @@ export default function ARExperiencePage() {
                         <h2 className="font-heading text-4xl md:text-5xl text-white tracking-wider mb-2">
                             AR <span className="text-marvel-red">EXPERIENCE</span>
                         </h2>
-                        <p className="text-white/40 text-sm mb-6">Enable camera and try character masks</p>
+                        <p className="text-white/40 text-sm mb-2">Try character masks with your camera — real PNG masks overlaid on your face</p>
+                        <p className="text-white/30 text-xs mb-6">
+                            Currently selected: <span style={{ color: currentMask.color }}>{currentMask.name}</span>
+                            {currentMask.placement === "neck" ? " (worn at neck)" : currentMask.placement === "forehead" ? " (worn on forehead)" : " (face mask)"}
+                        </p>
                         <div className="pointer-events-auto flex flex-col items-center gap-3">
                             <button
                                 onClick={() => { webcam.start(); }}
@@ -778,7 +697,7 @@ export default function ARExperiencePage() {
                                 onClick={activateMask}
                                 className="px-5 py-2 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-sm rounded-lg transition-all border border-white/10 flex items-center gap-2"
                             >
-                                <Eye size={16} /> Try Without Camera
+                                <Eye size={16} /> Preview Without Camera
                             </button>
                         </div>
                     </motion.div>
@@ -791,7 +710,7 @@ export default function ARExperiencePage() {
                     </div>
                 )}
 
-                {/* Mask control (visible when camera is active) */}
+                {/* Activate mask button when camera is active but mask not yet active */}
                 {webcam.active && !maskActive && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -800,71 +719,95 @@ export default function ARExperiencePage() {
                     >
                         <button
                             onClick={activateMask}
-                            className="px-8 py-4 bg-marvel-red/90 hover:bg-marvel-red text-white font-heading text-lg tracking-wider rounded-xl transition-all flex items-center gap-3 shadow-2xl"
-                            style={{ boxShadow: `0 0 40px ${mask.maskColor}40` }}
+                            className="px-8 py-4 rounded-xl text-white font-heading tracking-wider text-lg transition-all flex items-center gap-3 border"
+                            style={{
+                                backgroundColor: `${currentMask.color}30`,
+                                borderColor: `${currentMask.color}60`,
+                                boxShadow: `0 0 40px ${currentMask.color}30`,
+                            }}
                         >
-                            🥽 TRY {selectedChar.name.toUpperCase()}
+                            <Sparkles size={20} /> ACTIVATE {currentMask.name.toUpperCase()}
                         </button>
                     </motion.div>
                 )}
+
+                {/* Subtitle overlay */}
+                <AnimatePresence>
+                    {subtitle && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute bottom-44 left-4 right-4 md:left-1/4 md:right-1/4 z-30 text-center"
+                        >
+                            <span className="inline-block px-6 py-3 rounded-xl bg-black/80 backdrop-blur-lg text-white text-sm font-medium italic border border-white/10">
+                                &quot;{subtitle}&quot;
+                            </span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
-            {/* Bottom panel: character selector + voice commands */}
-            <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black via-black/95 to-transparent pt-6 pb-3 px-3">
-                {/* Voice command buttons */}
-                {maskActive && voiceLines.length > 0 && (
-                    <div className="mb-3 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                        {voiceLines.map((line) => (
-                            <VoiceCommandBox
-                                key={line}
-                                line={line}
-                                onClick={() => playVoiceLine(line)}
-                                active={activeVoiceLine === line && narrator.speaking}
-                                color={mask.maskColor}
-                            />
-                        ))}
+            {/* Bottom controls */}
+            <div className="absolute bottom-0 left-0 right-0 z-30">
+                {/* Voice lines */}
+                {dialogue && dialogue.lines.length > 0 && (
+                    <div className="px-4 pb-3">
+                        <style>{`@keyframes waveform { 0% { height: 4px; } 100% { height: 16px; } }`}</style>
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                            <Volume2 size={10} /> Voice Lines — {currentMask.name}
+                        </p>
+                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                            {dialogue.lines.map((line: DialogueLine) => (
+                                <VoiceCommandBox
+                                    key={line.id}
+                                    line={line}
+                                    active={playingId === line.id}
+                                    color={currentMask.color}
+                                    onClick={() => playingId === line.id ? stopAudio() : playVoiceLine(line)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 )}
 
-                {/* Character selector */}
-                <div className="flex items-center gap-2">
-                    <button onClick={prevChar} className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all">
-                        <ChevronLeft size={16} />
-                    </button>
-                    <div className="flex-1 overflow-x-auto flex gap-2 scrollbar-hide">
-                        {topCharacters.map((char, i) => (
-                            <CharacterSelectorCard
-                                key={char.id}
-                                char={char}
-                                selected={char.id === selectedChar.id}
-                                onClick={() => selectCharacter(char, i)}
-                            />
-                        ))}
-                    </div>
-                    <button onClick={nextChar} className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all">
-                        <ChevronRight size={16} />
-                    </button>
-                </div>
-
-                {/* Active mask label */}
-                {maskActive && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="mt-2 flex items-center justify-center gap-2 text-xs"
-                    >
-                        <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: mask.maskColor }} />
-                        <span style={{ color: mask.maskColor }}>{mask.name} Active</span>
-                        <span className="text-white/20">•</span>
-                        <button
-                            onClick={() => { setMaskActive(false); narrator.stop(); setActiveVoiceLine(null); }}
-                            className="text-white/30 hover:text-white text-xs"
-                        >
-                            Deactivate
+                {/* Character selector strip */}
+                <div className="glass-strong border-t border-white/10 p-3">
+                    <div className="flex items-center gap-2 max-w-4xl mx-auto">
+                        <button onClick={prevChar} className="p-1.5 text-white/40 hover:text-white">
+                            <ChevronLeft size={18} />
                         </button>
-                    </motion.div>
-                )}
+                        <div className="flex gap-2 overflow-x-auto flex-1 scrollbar-hide py-1">
+                            {MASK_CONFIGS.map((cfg, i) => (
+                                <CharacterSelectorCard
+                                    key={cfg.id}
+                                    maskCfg={cfg}
+                                    selected={selectedIdx === i}
+                                    onClick={() => selectMask(i)}
+                                />
+                            ))}
+                        </div>
+                        <button onClick={nextChar} className="p-1.5 text-white/40 hover:text-white">
+                            <ChevronRight size={18} />
+                        </button>
+                    </div>
+                    <p className="text-center text-[10px] text-white/20 mt-1">
+                        {currentMask.name} • {currentMask.placement === "neck" ? "Necklace (worn at neck)" : currentMask.placement === "forehead" ? "Helmet (worn on forehead)" : "Face Mask"} • {selectedIdx + 1} of {MASK_CONFIGS.length}
+                    </p>
+                </div>
             </div>
         </div>
+    );
+}
+
+export default function ARExperiencePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="text-white/40 font-heading text-xl tracking-wider animate-pulse">LOADING AR...</div>
+            </div>
+        }>
+            <ARPageInner />
+        </Suspense>
     );
 }

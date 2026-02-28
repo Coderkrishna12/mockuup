@@ -8,7 +8,6 @@ Format: MP3 or WAV, short clips (1-5 seconds each).
 voices/
   iron-man/
     i-am-iron-man.mp3
-    avengers-assemble.mp3
     i-love-you-three-thousand.mp3
     sometimes-you-gotta-run.mp3
   captain-america/

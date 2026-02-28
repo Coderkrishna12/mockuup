@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   },
 };
 
+import { CursorProvider } from "@/lib/CursorContext";
+import CustomCursor from "@/components/CustomCursor";
+import CursorSwitcher from "@/components/CursorSwitcher";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,22 +28,28 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className="antialiased bg-black text-white overflow-x-hidden">
-        {/* Persistent cosmic background across all pages */}
-        <div className="cosmic-bg" aria-hidden="true" />
+        <CursorProvider>
+          {/* Custom Marvel Cursors */}
+          <CustomCursor />
+          <CursorSwitcher />
 
-        {/* Loading intro — plays once per session */}
-        <LoadingScreen />
+          {/* Persistent cosmic background across all pages */}
+          <div className="cosmic-bg" aria-hidden="true" />
 
-        {/* Navigation */}
-        <Navbar />
+          {/* Loading intro — plays once per session */}
+          <LoadingScreen />
 
-        {/* Main Content */}
-        <main className="relative z-10 min-h-screen">
-          {children}
-        </main>
+          {/* Navigation */}
+          <Navbar />
 
-        {/* Footer */}
-        <Footer />
+          {/* Main Content */}
+          <main className="relative z-10 min-h-screen">
+            {children}
+          </main>
+
+          {/* Footer */}
+          <Footer />
+        </CursorProvider>
       </body>
     </html>
   );

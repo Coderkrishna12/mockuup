@@ -89,6 +89,15 @@
     min-height: 100vh;
   }
 
+  /* Hide system cursor when custom cursor is active on desktop */
+  @media (pointer: fine) {
+
+    .custom-cursor-active,
+    .custom-cursor-active * {
+      cursor: none !important;
+    }
+  }
+
   h1,
   h2,
   h3,
@@ -443,4 +452,106 @@
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ═══════════════════ 3D TIMELINE ═══════════════════ */
+
+/* Perspective container for 3D depth transforms */
+.timeline-perspective {
+  perspective: 1200px;
+  perspective-origin: center 40%;
+}
+
+/* Glassmorphism card with layered shadow system */
+.timeline-card-glass {
+  background: rgba(10, 10, 18, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: box-shadow 0.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+    border-color 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.timeline-card-glass:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 12px 40px rgba(0, 0, 0, 0.25),
+    0 24px 80px rgba(0, 0, 0, 0.2),
+    0 0 40px rgba(168, 85, 247, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Floating particle animation */
+@keyframes timeline-particle-float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 1;
+  }
+
+  92% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-100vh) translateX(var(--drift, 30px));
+    opacity: 0;
+  }
+}
+
+.timeline-particle {
+  animation: timeline-particle-float linear infinite;
+}
+
+/* ═══════════════════ CINEMATIC HERO ═══════════════════ */
+
+@keyframes hero-fog-drift {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(5%, -3%) scale(1.05);
+  }
+
+  66% {
+    transform: translate(-3%, 4%) scale(0.97);
+  }
+}
+
+@keyframes arc-reactor-pulse {
+
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.15);
+  }
+}
+
+@keyframes hero-char-idle {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(0.5deg);
+  }
 }

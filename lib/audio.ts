@@ -7,6 +7,7 @@ export interface AudioConfig {
 class AudioManager {
     private audioContext: AudioContext | null = null;
     private sounds: Map<string, AudioBuffer> = new Map();
+    private bgAudio: HTMLAudioElement | null = null;
     private _muted = true;
     private _volume = 0.3;
 
@@ -26,13 +27,34 @@ class AudioManager {
         return this.audioContext;
     }
 
+    private getBgAudio(): HTMLAudioElement | null {
+        if (typeof window === "undefined") return null;
+        if (!this.bgAudio) {
+            this.bgAudio = new Audio("/characters/marvel-audio.mpeg");
+            this.bgAudio.loop = true;
+            this.bgAudio.volume = this._volume;
+        }
+        return this.bgAudio;
+    }
+
     toggleMute(): boolean {
         this._muted = !this._muted;
+        const bg = this.getBgAudio();
+        if (bg) {
+            if (this._muted) {
+                bg.pause();
+            } else {
+                bg.play().catch(e => console.warn("Audio autoplay prevented:", e));
+            }
+        }
         return this._muted;
     }
 
     setVolume(vol: number): void {
         this._volume = Math.min(1, Math.max(0, vol));
+        if (this.bgAudio) {
+            this.bgAudio.volume = this._volume;
+        }
     }
 
     /** Play a simple synthesized tone for UI feedback */

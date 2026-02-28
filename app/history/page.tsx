@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Key, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { historyEras } from "@/data/history";
 import { useReducedMotion } from "@/lib/hooks";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
@@ -20,7 +21,6 @@ export default function HistoryPage() {
         if (reducedMotion || !containerRef.current) return;
 
         const ctx = gsap.context(() => {
-            // Hero title animation
             gsap.from(".history-hero-title", {
                 opacity: 0,
                 y: 60,
@@ -39,6 +39,7 @@ export default function HistoryPage() {
             // Each era section
             gsap.utils.toArray<HTMLElement>(".history-era").forEach((era) => {
                 const img = era.querySelector(".era-image");
+                const charImgs = era.querySelectorAll(".era-char-img");
                 const title = era.querySelector(".era-title");
                 const subtitle = era.querySelector(".era-subtitle");
                 const period = era.querySelector(".era-period");
@@ -55,13 +56,30 @@ export default function HistoryPage() {
                     },
                 });
 
-                if (img) tl.from(img, { opacity: 0, scale: 1.1, duration: 1.2, ease: "power2.out" }, 0);
+                if (img) tl.from(img, { opacity: 0, scale: 1.15, duration: 1.5, ease: "power2.out" }, 0);
+                charImgs.forEach((ci, i) => {
+                    tl.from(ci, { opacity: 0, y: 40, scale: 0.8, duration: 1, ease: "power2.out" }, 0.3 + i * 0.2);
+                });
                 if (period) tl.from(period, { opacity: 0, x: -30, duration: 0.6 }, 0.2);
                 if (title) tl.from(title, { opacity: 0, y: 40, duration: 0.8 }, 0.3);
                 if (subtitle) tl.from(subtitle, { opacity: 0, y: 20, duration: 0.6 }, 0.5);
                 paragraphs.forEach((p, i) => tl.from(p, { opacity: 0, y: 30, duration: 0.6 }, 0.6 + i * 0.15));
                 milestones.forEach((m, i) => tl.from(m, { opacity: 0, x: -20, duration: 0.4 }, 0.8 + i * 0.1));
                 if (divider) tl.from(divider, { scaleX: 0, duration: 0.8, ease: "power2.out" }, 0.4);
+
+                // Parallax on the background image
+                if (img) {
+                    gsap.to(img, {
+                        y: -80,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: era,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: 1,
+                        },
+                    });
+                }
             });
 
             // Progress bar
@@ -130,76 +148,139 @@ export default function HistoryPage() {
 
             {/* Era Sections */}
             {historyEras.map((era, index) => (
-                <section key={era.id} className="history-era relative py-24 md:py-32">
-                    {/* Background image */}
+                <section key={era.id} className="history-era relative py-24 md:py-40 min-h-[80vh]">
+                    {/* Background image — much larger and more visible */}
                     <div className="absolute inset-0 overflow-hidden">
-                        <div className="era-image absolute inset-0">
+                        <div className="era-image absolute inset-0 -top-20 -bottom-20">
                             <Image
                                 src={era.imageUrl}
                                 alt={era.title}
                                 fill
-                                className="object-cover opacity-15"
+                                className="object-cover"
+                                style={{ opacity: 0.25 }}
                                 onError={(e) => { e.currentTarget.style.opacity = "0"; }}
                             />
                         </div>
-                        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-black" />
+                        {/* Gradient overlay — keeps text readable but lets image show through */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+                        <div className="absolute inset-0" style={{
+                            background: `radial-gradient(circle at ${index % 2 === 0 ? '80% 30%' : '20% 70%'}, ${era.color}12, transparent 60%)`,
+                        }} />
                     </div>
 
-                    <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-12">
+                    {/* Floating character images — right side or left side alternating */}
+                    <div className={`absolute top-1/2 -translate-y-1/2 ${index % 2 === 0 ? 'right-4 md:right-12' : 'left-4 md:left-12'} hidden lg:flex flex-col gap-6 z-[1]`}>
+                        {era.characterImages.map((img: string | StaticImport, i: Key | null | undefined) => (
+                            <div
+                                key={i}
+                                className="era-char-img relative w-40 h-56 rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+                                style={{
+                                    transform: `rotate(${i === 0 ? -3 : 3}deg)`,
+                                    boxShadow: `0 20px 60px ${era.color}25`,
+                                }}
+                            >
+                                <Image
+                                    src={img}
+                                    alt={era.title}
+                                    fill
+                                    className="object-cover"
+                                    onError={(e) => { e.currentTarget.style.opacity = "0"; }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                <div className="absolute inset-0 border-2 rounded-2xl" style={{ borderColor: `${era.color}20` }} />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className={`relative z-10 max-w-4xl mx-auto px-6 md:px-12 ${index % 2 === 0 ? 'lg:mr-auto lg:ml-24' : 'lg:ml-auto lg:mr-24'}`}>
                         {/* Period badge */}
                         <div className="era-period flex items-center gap-3 mb-4">
-                            <div className="w-12 h-px" style={{ backgroundColor: era.color }} />
+                            <div className="w-16 h-px" style={{ backgroundColor: era.color }} />
                             <span className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: era.color }}>
                                 {era.period}
                             </span>
                         </div>
 
                         {/* Title */}
-                        <h2
-                            className="era-title font-heading text-5xl md:text-7xl text-white tracking-wider mb-2"
-                        >
+                        <h2 className="era-title font-heading text-5xl md:text-7xl lg:text-8xl text-white tracking-wider mb-3">
                             {era.title}
                         </h2>
-                        <p className="era-subtitle text-xl text-white/40 mb-10">{era.subtitle}</p>
+                        <p className="era-subtitle text-xl md:text-2xl text-white/50 mb-10 font-light">{era.subtitle}</p>
 
                         {/* Divider */}
                         <div
                             className="era-divider h-px w-full mb-10 origin-left"
-                            style={{ backgroundColor: `${era.color}33` }}
+                            style={{ background: `linear-gradient(to right, ${era.color}, transparent)` }}
                         />
 
                         {/* Content */}
                         <div className="grid md:grid-cols-[1fr,280px] gap-12">
                             <div className="space-y-6">
                                 {era.paragraphs.map((p, i) => (
-                                    <p key={i} className="era-paragraph text-white/60 leading-relaxed text-base">
-                                        {p}
+                                    <p key={i} className="era-paragraph text-white/70 leading-relaxed text-base md:text-lg">
+                                        {i === 0 && (
+                                            <span
+                                                className="text-5xl font-heading float-left mr-3 mt-1 leading-none"
+                                                style={{ color: era.color }}
+                                            >
+                                                {p[0]}
+                                            </span>
+                                        )}
+                                        {i === 0 ? p.slice(1) : p}
                                     </p>
                                 ))}
                             </div>
 
                             {/* Milestones */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-white/30 mb-4">
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white/30 mb-4 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: era.color }} />
                                     Key Milestones
                                 </h3>
                                 {era.milestones.map((m, i) => (
-                                    <div key={i} className="era-milestone flex gap-3 items-start">
+                                    <div key={i} className="era-milestone flex gap-3 items-start group">
                                         <span
-                                            className="text-sm font-bold font-heading shrink-0 w-12"
+                                            className="text-sm font-bold font-heading shrink-0 w-12 group-hover:scale-110 transition-transform"
                                             style={{ color: era.color }}
                                         >
                                             {m.year}
                                         </span>
-                                        <span className="text-sm text-white/50">{m.event}</span>
+                                        <span className="text-sm text-white/50 group-hover:text-white/70 transition-colors">{m.event}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
+
+                        {/* Mobile character images */}
+                        <div className="flex gap-4 mt-10 lg:hidden overflow-x-auto scrollbar-hide">
+                            {era.characterImages.map((img: string | StaticImport, i: Key | null | undefined) => (
+                                <div
+                                    key={i}
+                                    className="era-char-img relative w-32 h-44 rounded-xl overflow-hidden border border-white/10 flex-shrink-0"
+                                    style={{ boxShadow: `0 10px 30px ${era.color}20` }}
+                                >
+                                    <Image
+                                        src={img}
+                                        alt={era.title}
+                                        fill
+                                        className="object-cover"
+                                        onError={(e) => { e.currentTarget.style.opacity = "0"; }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Era number */}
-                    <div className="absolute top-8 right-8 font-heading text-[120px] md:text-[200px] leading-none opacity-[0.03] select-none pointer-events-none">
+                    <div
+                        className="absolute top-8 font-heading text-[120px] md:text-[220px] leading-none select-none pointer-events-none"
+                        style={{
+                            opacity: 0.04,
+                            [index % 2 === 0 ? 'left' : 'right']: '20px',
+                            color: era.color,
+                        }}
+                    >
                         {String(index + 1).padStart(2, "0")}
                     </div>
                 </section>
