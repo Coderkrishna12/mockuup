@@ -26,6 +26,8 @@ export const arcadeGames = [
         icon: "⚔️",
         color: "#DC2626",
         difficulty: "Medium",
+        characterImage: "https://image.tmdb.org/t/p/w500/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg",
+        characterName: "The Avengers",
     },
     {
         id: "stones",
@@ -34,6 +36,8 @@ export const arcadeGames = [
         icon: "💎",
         color: "#7C3AED",
         difficulty: "Easy",
+        characterImage: "https://image.tmdb.org/t/p/w500/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg",
+        characterName: "Thanos",
     },
     {
         id: "swing",
@@ -42,6 +46,8 @@ export const arcadeGames = [
         icon: "🕸️",
         color: "#EF4444",
         difficulty: "Hard",
+        characterImage: "https://image.tmdb.org/t/p/w500/rweIrveL43TaxUN0akQEaAXL6x0.jpg",
+        characterName: "Spider-Man",
     },
     {
         id: "shield",
@@ -50,6 +56,8 @@ export const arcadeGames = [
         icon: "🛡️",
         color: "#2563EB",
         difficulty: "Medium",
+        characterImage: "https://image.tmdb.org/t/p/w500/vSNxAJTlD0r02V9sPYpOjqDZXUK.jpg",
+        characterName: "Captain America",
     },
     {
         id: "reactor",
@@ -58,5 +66,7 @@ export const arcadeGames = [
         icon: "⚡",
         color: "#F59E0B",
         difficulty: "Easy",
+        characterImage: "https://image.tmdb.org/t/p/w500/78lPtwv72eTNqFW9COBYI0dWDJa.jpg",
+        characterName: "Iron Man",
     },
 ];

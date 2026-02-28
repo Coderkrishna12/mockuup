@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import gsap from "gsap";
 import { arcadeGames } from "@/data/arcade";
 import { staggerContainer, staggerItem } from "@/lib/animations";
-import { Gamepad2 } from "lucide-react";
+import { Gamepad2, ChevronRight } from "lucide-react";
 
 export default function ArcadePage() {
     const heroRef = useRef<HTMLDivElement>(null);
@@ -85,48 +85,83 @@ export default function ArcadePage() {
             </div>
 
             {/* Games Grid */}
-            <div className="max-w-5xl mx-auto px-6 pb-24 -mt-8">
+            <div className="max-w-6xl mx-auto px-6 pb-24 -mt-8">
                 <motion.div
                     variants={staggerContainer}
                     initial="initial"
                     animate="animate"
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
                 >
                     {arcadeGames.map((game) => (
                         <motion.div key={game.id} variants={staggerItem}>
                             <Link
                                 href={`/arcade/${game.id}`}
-                                className="group block glass rounded-xl p-6 border border-white/5 hover:border-white/20 transition-all duration-300 hover:shadow-lg"
+                                className="group block rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 hover:shadow-2xl relative"
                                 style={{
                                     ["--glow-color" as string]: game.color,
                                 }}
                             >
-                                <div className="flex items-start gap-4 mb-4">
+                                {/* Character image background */}
+                                <div className="relative h-48 overflow-hidden">
+                                    <Image
+                                        src={game.characterImage}
+                                        alt={game.characterName}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                        onError={(e) => { e.currentTarget.style.opacity = "0"; }}
+                                    />
+                                    {/* Gradient overlays */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                                     <div
-                                        className="text-4xl w-14 h-14 rounded-lg flex items-center justify-center shrink-0"
-                                        style={{ backgroundColor: `${game.color}15`, border: `1px solid ${game.color}30` }}
+                                        className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                                        style={{ background: `linear-gradient(135deg, ${game.color}40, transparent)` }}
+                                    />
+
+                                    {/* Icon badge */}
+                                    <div
+                                        className="absolute top-4 right-4 text-3xl w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur-lg border transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
+                                        style={{ backgroundColor: `${game.color}20`, borderColor: `${game.color}40` }}
                                     >
                                         {game.icon}
                                     </div>
-                                    <div>
-                                        <h3 className="font-heading text-xl text-white tracking-wider group-hover:text-marvel-red transition-colors">
-                                            {game.title}
-                                        </h3>
-                                        <span
-                                            className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full"
-                                            style={{ color: game.color, backgroundColor: `${game.color}15` }}
-                                        >
-                                            {game.difficulty}
-                                        </span>
+
+                                    {/* Difficulty badge */}
+                                    <span
+                                        className="absolute top-4 left-4 text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full backdrop-blur-lg border"
+                                        style={{ color: game.color, backgroundColor: `${game.color}15`, borderColor: `${game.color}30` }}
+                                    >
+                                        {game.difficulty}
+                                    </span>
+
+                                    {/* Character name at bottom of image */}
+                                    <div className="absolute bottom-3 left-4 flex items-center gap-2">
+                                        <div className="w-1 h-4 rounded-full" style={{ backgroundColor: game.color }} />
+                                        <span className="text-xs text-white/50 font-medium uppercase tracking-wider">{game.characterName}</span>
                                     </div>
                                 </div>
 
-                                <p className="text-sm text-white/50 mb-4">{game.description}</p>
+                                {/* Card body */}
+                                <div className="p-5 bg-black/40 backdrop-blur-sm">
+                                    <h3 className="font-heading text-xl text-white tracking-wider mb-2 group-hover:text-marvel-red transition-colors duration-300">
+                                        {game.title}
+                                    </h3>
+                                    <p className="text-sm text-white/40 mb-4 leading-relaxed">{game.description}</p>
 
-                                <div className="flex items-center gap-2 text-sm text-white/30 group-hover:text-marvel-red transition-colors">
-                                    <Gamepad2 size={16} />
-                                    <span>Play Now →</span>
+                                    <div
+                                        className="flex items-center gap-2 text-sm font-bold transition-all duration-300 group-hover:gap-3"
+                                        style={{ color: game.color }}
+                                    >
+                                        <Gamepad2 size={16} />
+                                        <span>Play Now</span>
+                                        <ChevronRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                                    </div>
                                 </div>
+
+                                {/* Bottom glow line */}
+                                <div
+                                    className="h-0.5 w-0 group-hover:w-full transition-all duration-700"
+                                    style={{ backgroundColor: game.color }}
+                                />
                             </Link>
                         </motion.div>
                     ))}
