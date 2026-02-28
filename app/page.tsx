@@ -1,65 +1,338 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowRight, Film, Users, Clock, Globe } from "lucide-react";
+
+import HeroSection from "@/components/HeroSection";
+import MovieCard from "@/components/MovieCard";
+import { movies } from "@/data/movies";
+import { characters } from "@/data/characters";
+import { useReducedMotion } from "@/lib/hooks";
+import { staggerContainer, staggerItem, fadeInUp } from "@/lib/animations";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const phases = [
+  { num: 1, title: "Phase One", subtitle: "The Beginning", years: "2008–2012", color: "#3B82F6", movies: movies.filter((m) => m.phase === 1) },
+  { num: 2, title: "Phase Two", subtitle: "Expansion", years: "2013–2015", color: "#EF4444", movies: movies.filter((m) => m.phase === 2) },
+  { num: 3, title: "Phase Three", subtitle: "Infinity Saga", years: "2016–2019", color: "#FFD700", movies: movies.filter((m) => m.phase === 3) },
+  { num: 4, title: "Phase Four", subtitle: "Multiverse Saga", years: "2021–2022", color: "#A855F7", movies: movies.filter((m) => m.phase === 4) },
+  { num: 5, title: "Phase Five", subtitle: "New Era", years: "2023–2024", color: "#EC4899", movies: movies.filter((m) => m.phase === 5) },
+];
+
+const featuredMovies = movies.filter((m) =>
+  ["avengers-endgame", "avengers-infinity-war", "black-panther", "spider-man-no-way-home"].includes(m.id)
+);
+
+const stats = [
+  { icon: Film, label: "Movies", value: "30+" },
+  { icon: Users, label: "Characters", value: "20+" },
+  { icon: Clock, label: "Years of MCU", value: "16" },
+  { icon: Globe, label: "Universes", value: "8" },
+];
+
+export default function HomePage() {
+  const reducedMotion = useReducedMotion();
+  const phasesContainerRef = useRef<HTMLDivElement>(null);
+  const phasesScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (reducedMotion || !phasesContainerRef.current || !phasesScrollRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Horizontal scroll for phases
+      const scrollContent = phasesScrollRef.current;
+      if (!scrollContent) return;
+
+      const scrollWidth = scrollContent.scrollWidth - window.innerWidth;
+
+      gsap.to(scrollContent, {
+        x: -scrollWidth,
+        ease: "none",
+        scrollTrigger: {
+          trigger: phasesContainerRef.current,
+          start: "top top",
+          end: () => `+=${scrollWidth}`,
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      // Fade in sections
+      gsap.utils.toArray<HTMLElement>(".scroll-section").forEach((section) => {
+        gsap.from(section, {
+          opacity: 0,
+          y: 60,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      });
+
+      // Parallax for featured section
+      gsap.to(".featured-parallax", {
+        y: -80,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".featured-section",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    });
+
+    return () => ctx.revert();
+  }, [reducedMotion]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="relative">
+      {/* ═══════════════════ HERO ═══════════════════ */}
+      <HeroSection />
+
+      {/* ═══════════════════ STATS BAR ═══════════════════ */}
+      <section className="scroll-section relative z-10 py-12 border-y border-white/5">
+        <div className="max-w-5xl mx-auto px-6">
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-6"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {stats.map((stat) => (
+              <motion.div
+                key={stat.label}
+                variants={staggerItem}
+                className="text-center"
+              >
+                <stat.icon size={24} className="mx-auto text-marvel-red mb-2" />
+                <p className="font-heading text-3xl text-white">{stat.value}</p>
+                <p className="text-xs text-white/40 uppercase tracking-wider">{stat.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-      </main>
+      </section>
+
+      {/* ═══════════════════ HORIZONTAL SCROLL PHASES ═══════════════════ */}
+      <section ref={phasesContainerRef} className="relative z-10 min-h-screen">
+        {/* Sticky header */}
+        <div className="absolute top-0 left-0 right-0 z-20 pt-8 px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="font-heading text-4xl md:text-5xl text-white tracking-wider">
+              EXPLORE THE <span className="text-marvel-red">MCU</span>
+            </h2>
+            <p className="text-sm text-white/40 mt-2">
+              Scroll to journey through the phases →
+            </p>
+          </div>
+        </div>
+
+        <div
+          ref={phasesScrollRef}
+          className="flex items-center h-screen pt-24 gpu-accelerated"
+          style={{ width: `${phases.length * 100 + 50}vw` }}
+        >
+          {phases.map((phase) => (
+            <div
+              key={phase.num}
+              className="flex-shrink-0 w-screen h-full flex items-center px-6 md:px-12"
+            >
+              <div className="max-w-7xl mx-auto w-full">
+                {/* Phase header */}
+                <div className="mb-8">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: phase.color, boxShadow: `0 0 20px ${phase.color}50` }}
+                    />
+                    <span className="text-sm font-medium" style={{ color: phase.color }}>
+                      {phase.years}
+                    </span>
+                  </div>
+                  <h3 className="font-heading text-5xl md:text-7xl text-white tracking-wider">
+                    {phase.title}
+                  </h3>
+                  <p className="text-lg text-white/40 mt-1">{phase.subtitle}</p>
+                </div>
+
+                {/* Phase movies */}
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4">
+                  {phase.movies.map((movie, i) => (
+                    <MovieCard key={movie.id} movie={movie} index={i} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* End CTA */}
+          <div className="flex-shrink-0 w-[50vw] h-full flex items-center justify-center px-12">
+            <div className="text-center">
+              <h3 className="font-heading text-4xl text-white mb-4">Ready to explore?</h3>
+              <Link
+                href="/movies"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-marvel-red text-white rounded-lg hover:glow-red transition-all"
+              >
+                View All Movies <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════ FEATURED MOVIES ═══════════════════ */}
+      <section className="scroll-section featured-section relative z-10 py-24 md:py-32">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="font-heading text-4xl md:text-6xl text-white tracking-wider mb-3">
+              ICONIC <span className="text-marvel-gold text-glow-gold">MOMENTS</span>
+            </h2>
+            <p className="text-white/40 max-w-md mx-auto">
+              The movies that defined a generation and changed cinema forever.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {featuredMovies.map((movie, i) => (
+              <Link
+                key={movie.id}
+                href={`/movies/${movie.id}`}
+                className="group relative h-[300px] md:h-[400px] rounded-xl overflow-hidden gpu-accelerated"
+              >
+                <div className="featured-parallax absolute inset-0">
+                  <Image
+                    src={movie.posterUrl}
+                    alt={movie.title}
+                    fill
+                    unoptimized={true}
+                    onError={(e) => {
+                      e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg";
+                      e.currentTarget.className = "object-contain p-12 opacity-40";
+                    }}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-marvel-red/30 rounded-xl transition-colors duration-500" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <span className="text-xs text-marvel-red font-medium">Phase {movie.phase} • {movie.year}</span>
+                  <h3 className="font-heading text-3xl md:text-4xl text-white tracking-wider mt-1">
+                    {movie.title}
+                  </h3>
+                  <p className="text-sm text-white/50 mt-2 line-clamp-2">{movie.synopsis}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════ CHARACTER HIGHLIGHTS ═══════════════════ */}
+      <section className="scroll-section relative z-10 py-24 md:py-32 bg-gradient-to-b from-transparent via-[#0a0000] to-transparent">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
+            <div>
+              <h2 className="font-heading text-4xl md:text-6xl text-white tracking-wider mb-2">
+                EARTH&apos;S MIGHTIEST <span className="text-marvel-red">HEROES</span>
+              </h2>
+              <p className="text-white/40">Hover to reveal character details</p>
+            </div>
+            <Link
+              href="/characters"
+              className="mt-4 md:mt-0 inline-flex items-center gap-2 text-sm text-marvel-red hover:text-white transition-colors"
+            >
+              View All Characters <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+          >
+            {characters.slice(0, 12).map((character, i) => (
+              <motion.div key={character.id} variants={staggerItem}>
+                <Link
+                  href={`/characters/${character.id}`}
+                  className="group block relative aspect-[3/4] rounded-lg overflow-hidden"
+                >
+                  <Image
+                    src={character.imageUrl}
+                    alt={character.name}
+                    fill
+                    unoptimized={true}
+                    onError={(e) => {
+                      e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg";
+                      e.currentTarget.className = "object-contain p-4 opacity-50 transition-transform duration-500 group-hover:scale-110";
+                    }}
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                  <div className="absolute inset-0 border border-transparent group-hover:border-marvel-red/40 rounded-lg transition-colors" />
+                  <div className="absolute bottom-2 left-2 right-2">
+                    <p className="font-heading text-lg text-white tracking-wider">{character.name}</p>
+                    <p className="text-[10px] text-white/40">{character.alias}</p>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════ CTA SECTION ═══════════════════ */}
+      <section className="scroll-section relative z-10 py-24 md:py-32">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="font-heading text-5xl md:text-7xl text-white tracking-wider mb-4">
+              THE STORY <span className="text-marvel-red text-glow-red">CONTINUES</span>
+            </h2>
+            <p className="text-white/40 max-w-lg mx-auto mb-8">
+              Explore the interactive timeline, dive into the multiverse, and discover every connection in the MCU.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/timeline"
+                className="inline-flex items-center gap-2 px-8 py-3 bg-marvel-red text-white font-medium rounded-lg hover:glow-red-intense transition-all hover:scale-105 gpu-accelerated"
+              >
+                <Clock size={18} />
+                Interactive Timeline
+              </Link>
+              <Link
+                href="/multiverse"
+                className="inline-flex items-center gap-2 px-8 py-3 border border-white/20 text-white font-medium rounded-lg hover:border-marvel-purple hover:bg-white/5 transition-all hover:scale-105 gpu-accelerated"
+              >
+                <Globe size={18} />
+                Multiverse Explorer
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 }
