@@ -1,0 +1,221 @@
+/* MCU Timeline Page */
+
+.timeline-page {
+    background: #050505;
+    min-height: 100vh;
+}
+
+.timeline-header {
+    padding: 8rem 0 4rem;
+    background: linear-gradient(to bottom, #0a0a0a, #050505);
+}
+
+.timeline-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.timeline-badge .badge-line {
+    width: 40px;
+    height: 2px;
+    background: var(--marvel-red);
+}
+
+.timeline-page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    letter-spacing: 6px;
+    color: white;
+}
+
+.timeline-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 0.5rem;
+}
+
+/* Filters */
+.timeline-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 2rem 0 3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 3rem;
+}
+
+.tl-filter {
+    padding: 0.5rem 1.2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
+
+.tl-filter:hover {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tl-filter.active {
+    background: var(--marvel-red);
+    border-color: var(--marvel-red);
+    color: white;
+}
+
+/* ========== Timeline ========== */
+.mcu-timeline {
+    position: relative;
+    padding: 2rem 0 6rem;
+}
+
+.tl-spine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, rgba(232, 0, 45, 0.4) 10%, rgba(232, 0, 45, 0.4) 90%, transparent);
+}
+
+.tl-event {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: tlFadeIn 0.6s ease both;
+    animation-delay: var(--ev-delay);
+}
+
+@keyframes tlFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tl-event.tl-left {
+    flex-direction: row-reverse;
+    padding-right: calc(50% + 40px);
+    padding-left: 1rem;
+}
+
+.tl-event.tl-right {
+    padding-left: calc(50% + 40px);
+    padding-right: 1rem;
+}
+
+/* Connector & Dot */
+.tl-connector {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.tl-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(10, 10, 10, 0.9);
+    border: 2px solid var(--ev-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px color-mix(in srgb, var(--ev-color) 30%, transparent);
+    transition: all 0.3s;
+}
+
+.tl-event:hover .tl-dot {
+    transform: scale(1.2);
+    box-shadow: 0 0 25px color-mix(in srgb, var(--ev-color) 50%, transparent);
+}
+
+.tl-icon {
+    font-size: 1.1rem;
+}
+
+/* Card */
+.tl-card {
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.tl-event:hover .tl-card {
+    border-color: var(--ev-color);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--ev-color) 10%, transparent);
+    transform: translateY(-2px);
+}
+
+.tl-card-year {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--ev-color);
+    line-height: 1;
+}
+
+.tl-cat-badge {
+    display: inline-block;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin: 0.5rem 0;
+    text-transform: uppercase;
+}
+
+.tl-card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: white;
+    margin: 0.25rem 0;
+}
+
+.tl-card-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .timeline-page-title {
+        font-size: 3.5rem;
+    }
+
+    .tl-event.tl-left,
+    .tl-event.tl-right {
+        padding: 0 1rem 0 calc(50% + 40px);
+        flex-direction: row;
+    }
+}

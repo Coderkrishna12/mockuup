@@ -1,0 +1,403 @@
+/* Comics Page Styles */
+
+.comics-page {
+    background: #050505;
+    min-height: 100vh;
+}
+
+.comics-page-header {
+    padding: 6rem 0 4rem;
+    background: linear-gradient(to bottom, #0a0a0a, #050505);
+    position: relative;
+}
+
+.comics-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.comics-badge .badge-line {
+    width: 40px;
+    height: 2px;
+    background: var(--marvel-red);
+}
+
+.comics-page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    letter-spacing: 6px;
+    color: white;
+}
+
+.comics-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 0.5rem;
+}
+
+/* Filters */
+.comics-filters {
+    padding: 2rem 0 3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 3rem;
+}
+
+.era-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.era-btn {
+    padding: 0.5rem 1.2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.era-btn:hover {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.era-btn.active {
+    background: var(--marvel-red);
+    border-color: var(--marvel-red);
+    color: white;
+}
+
+/* Grid */
+.comics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+    padding-bottom: 6rem;
+}
+
+/* Comic Card */
+.comic-card {
+    cursor: pointer;
+    animation: comicFadeIn 0.5s ease both;
+    animation-delay: var(--anim-delay);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.comic-card:hover {
+    transform: translateY(-8px);
+}
+
+@keyframes comicFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.comic-cover-wrap {
+    position: relative;
+    aspect-ratio: 2/3;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.3s, box-shadow 0.4s;
+}
+
+.comic-card:hover .comic-cover-wrap {
+    border-color: var(--comic-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px color-mix(in srgb, var(--comic-color) 15%, transparent);
+}
+
+.comic-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+    position: relative;
+    z-index: 1;
+}
+
+.comic-card:hover .comic-cover-img {
+    transform: scale(1.05);
+}
+
+.comic-cover-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    background: linear-gradient(135deg, rgba(15, 15, 15, 0.9), rgba(25, 25, 25, 0.9));
+    z-index: 0;
+}
+
+.cover-series {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 2px;
+    text-align: center;
+    padding: 0 0.5rem;
+}
+
+.cover-issue {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--comic-color);
+}
+
+.comic-year-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    z-index: 2;
+}
+
+.comic-info {
+    padding: 1rem 0.25rem;
+}
+
+.comic-era-tag {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--comic-color);
+}
+
+.comic-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: white;
+    margin: 0.25rem 0;
+    line-height: 1.2;
+}
+
+.comic-credits {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* ========== Detail Modal ========== */
+.comic-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+    padding: 2rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.comic-modal {
+    background: #0d0d0d;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.comic-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1rem;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.comic-modal-close:hover {
+    background: var(--marvel-red);
+}
+
+.comic-modal-grid {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
+}
+
+.comic-modal-cover {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+}
+
+.modal-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-cover-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, rgba(15, 15, 15, 0.9), rgba(25, 25, 25, 0.9));
+    z-index: 0;
+}
+
+.modal-series {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+}
+
+.modal-issue {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--comic-color);
+}
+
+.comic-modal-info {
+    padding: 2rem 2rem 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-era {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--comic-color);
+}
+
+.modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 3px;
+    color: white;
+    line-height: 1.1;
+}
+
+.modal-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.6;
+}
+
+.modal-credits {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 1rem;
+}
+
+.credit-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.credit-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.3);
+    width: 70px;
+    flex-shrink: 0;
+}
+
+.credit-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+    .comics-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .comic-modal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .comic-modal-cover {
+        max-height: 250px;
+    }
+
+    .comic-modal-info {
+        padding: 1.5rem;
+    }
+
+    .comics-page-title {
+        font-size: 3.5rem;
+    }
+}

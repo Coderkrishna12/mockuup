@@ -1,0 +1,257 @@
+/* About Page */
+
+.about-page {
+    background: #050505;
+    min-height: 100vh;
+}
+
+.about-header {
+    padding: 8rem 0 4rem;
+    background: linear-gradient(to bottom, #0a0a0a, #050505);
+}
+
+.about-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.about-badge .badge-line {
+    width: 40px;
+    height: 2px;
+    background: var(--marvel-red);
+}
+
+.about-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    letter-spacing: 6px;
+    color: white;
+}
+
+.about-intro {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.8;
+    max-width: 700px;
+    margin-top: 1rem;
+}
+
+/* Stats Grid */
+.about-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    padding: 3rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.about-stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2rem 1rem;
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    transition: all 0.3s;
+    animation: statFadeIn 0.5s ease both;
+    animation-delay: var(--stat-delay);
+}
+
+@keyframes statFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.about-stat-card:hover {
+    border-color: var(--marvel-red);
+    transform: translateY(-4px);
+}
+
+.stat-icon {
+    font-size: 1.8rem;
+}
+
+.stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    color: white;
+}
+
+.stat-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    text-align: center;
+}
+
+/* Milestones */
+.about-milestones {
+    padding: 4rem 0;
+}
+
+.milestones-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 4px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.milestones-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.milestone {
+    display: flex;
+    gap: 2rem;
+    animation: msFadeIn 0.5s ease both;
+    animation-delay: var(--ms-delay);
+}
+
+@keyframes msFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.ms-year-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+    flex-shrink: 0;
+}
+
+.ms-year {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--ms-color);
+    letter-spacing: 1px;
+}
+
+.ms-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ms-color);
+    margin: 0.5rem 0;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--ms-color) 40%, transparent);
+}
+
+.ms-line {
+    flex: 1;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--ms-color), rgba(255, 255, 255, 0.06));
+}
+
+.ms-content {
+    padding-bottom: 2.5rem;
+}
+
+.ms-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.ms-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.5;
+}
+
+/* Mission */
+.about-mission {
+    padding: 4rem 0 6rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.about-mission .badge-line {
+    margin: 0 auto;
+}
+
+.about-mission .mission-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 2rem;
+}
+
+.mission-quote {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 3px;
+    color: white;
+    line-height: 1.2;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mission-attribution {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--marvel-red);
+    margin: 1rem 0 2rem;
+}
+
+.mission-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .about-title {
+        font-size: 3.5rem;
+    }
+
+    .about-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mission-quote {
+        font-size: 1.8rem;
+    }
+}

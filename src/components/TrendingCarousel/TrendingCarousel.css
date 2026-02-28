@@ -1,0 +1,239 @@
+/* Trending Carousel — Cinematic Auto-Rotate */
+
+.trending-section {
+    position: relative;
+    width: 100%;
+    min-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.trending-bg {
+    position: absolute;
+    inset: 0;
+    transition: background 0.8s ease;
+    z-index: 0;
+}
+
+.trending-glow {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+    width: 50vw;
+    height: 50vw;
+    transform: translateY(-50%);
+    filter: blur(80px);
+    pointer-events: none;
+    transition: background 0.8s ease;
+    z-index: 0;
+}
+
+.trending-content {
+    position: relative;
+    z-index: 10;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 5%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* Left Text Block */
+.trending-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.trending-tag {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeInUp 0.6s ease both;
+}
+
+.trending-tag::before {
+    content: '';
+    width: 30px;
+    height: 2px;
+    background: var(--accent);
+}
+
+.trending-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    letter-spacing: 4px;
+    color: white;
+    line-height: 0.95;
+    animation: fadeInUp 0.6s ease 0.1s both;
+}
+
+.trending-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.trending-actions {
+    display: flex;
+    gap: 1rem;
+    animation: fadeInUp 0.6s ease 0.3s both;
+}
+
+.btn-trending-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.9rem 2.2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: all 0.3s;
+}
+
+.btn-trending-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(232, 0, 45, 0.4);
+}
+
+.btn-trending-ghost {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.9rem 2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+}
+
+.btn-trending-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* Right Character */
+.trending-right {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.trending-character {
+    animation: characterSlideIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.trending-character img {
+    max-height: 65vh;
+    object-fit: contain;
+    filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.6));
+}
+
+@keyframes characterSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dots */
+.trending-dots {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 20;
+}
+
+.trending-dot {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.trending-dot.active .dot-progress {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    animation: dotFill 5s linear both;
+}
+
+@keyframes dotFill {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+/* Counter */
+.trending-counter {
+    position: absolute;
+    bottom: 3rem;
+    right: 5%;
+    z-index: 20;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 2px;
+}
+
+.counter-current {
+    color: white;
+    font-size: 2rem;
+}
+
+.counter-sep {
+    margin: 0 0.3rem;
+}
+
+@media (max-width: 1024px) {
+    .trending-content {
+        grid-template-columns: 1fr;
+    }
+
+    .trending-right {
+        display: none;
+    }
+
+    .trending-title {
+        font-size: 3.5rem;
+    }
+}

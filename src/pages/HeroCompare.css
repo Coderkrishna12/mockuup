@@ -1,0 +1,463 @@
+/* Hero Compare Page */
+
+.compare-page {
+    background: #050505;
+    min-height: 100vh;
+}
+
+.compare-header {
+    padding: 8rem 0 4rem;
+    background: linear-gradient(to bottom, #0a0a0a, #050505);
+}
+
+.compare-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.compare-badge .badge-line {
+    width: 40px;
+    height: 2px;
+    background: var(--marvel-red);
+}
+
+.compare-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    letter-spacing: 6px;
+    color: white;
+}
+
+.compare-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 0.5rem;
+}
+
+/* ========== Arena ========== */
+.compare-arena {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 3rem 0;
+}
+
+.compare-slot {
+    flex: 1;
+    max-width: 350px;
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.4s;
+}
+
+.compare-slot:hover {
+    border-color: var(--slot-color);
+}
+
+.slot-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 4rem 2rem;
+    width: 100%;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.slot-empty:hover {
+    color: white;
+}
+
+.slot-plus {
+    font-size: 3rem;
+    font-weight: 300;
+    width: 70px;
+    height: 70px;
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.3s;
+}
+
+.slot-empty:hover .slot-plus {
+    border-color: var(--slot-color);
+    color: var(--slot-color);
+}
+
+.slot-filled {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2.5rem 2rem;
+}
+
+.slot-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--slot-color);
+}
+
+.slot-initial {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--slot-color);
+}
+
+.slot-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    color: white;
+}
+
+.slot-alias {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.slot-overall {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+.overall-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--slot-color);
+}
+
+.overall-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-swap {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.4rem 1.5rem;
+    border-radius: 4px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-swap:hover {
+    color: white;
+    border-color: var(--slot-color);
+}
+
+/* VS Badge */
+.vs-badge {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    background: var(--marvel-red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: white;
+    letter-spacing: 2px;
+    box-shadow: 0 0 30px rgba(232, 0, 45, 0.3);
+}
+
+/* ========== Stat Bars ========== */
+.compare-stats {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 0 6rem;
+}
+
+.stats-header {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 4px;
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: rowFadeIn 0.5s ease both;
+    animation-delay: var(--row-delay);
+}
+
+@keyframes rowFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.stat-val-a,
+.stat-val-b {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.4);
+    width: 50px;
+    text-align: center;
+    transition: color 0.3s;
+}
+
+.stat-val-a.winner,
+.stat-val-b.winner {
+    color: white;
+    font-size: 1.7rem;
+}
+
+.stat-bar-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stat-bar-a {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 4px 0 0 4px;
+    opacity: 0.8;
+    animation: barGrow 0.8s ease both;
+}
+
+.stat-bar-b {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 4px 4px 0;
+    opacity: 0.8;
+    animation: barGrow 0.8s ease both;
+}
+
+@keyframes barGrow {
+    from {
+        width: 0 !important;
+    }
+}
+
+.stat-label {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 2;
+}
+
+.overall-row {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.overall-stat-label {
+    font-size: 0.9rem;
+    color: white;
+}
+
+/* ========== Picker Modal ========== */
+.picker-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.picker-modal {
+    background: #0d0d0d;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 2rem;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.picker-close {
+    float: right;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1rem;
+    transition: background 0.3s;
+    cursor: pointer;
+}
+
+.picker-close:hover {
+    background: var(--marvel-red);
+}
+
+.picker-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 3px;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.picker-search {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.picker-search:focus {
+    border-color: var(--marvel-red);
+}
+
+.picker-search::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.5rem;
+}
+
+.picker-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+}
+
+.picker-item:hover {
+    border-color: var(--pick-color);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.picker-initial {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    width: 36px;
+    min-width: 36px;
+    text-align: center;
+}
+
+.picker-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+    .compare-title {
+        font-size: 3rem;
+    }
+
+    .compare-arena {
+        flex-direction: column;
+    }
+
+    .compare-slot {
+        max-width: 100%;
+    }
+}

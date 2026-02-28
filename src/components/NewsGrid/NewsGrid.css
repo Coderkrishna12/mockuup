@@ -1,0 +1,157 @@
+/* News Grid — Marvel News Section */
+
+.news-section {
+    padding: 8rem 0;
+    background: #050505;
+    position: relative;
+}
+
+.news-header {
+    margin-bottom: 4rem;
+}
+
+.news-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.news-badge .badge-line {
+    width: 40px;
+    height: 2px;
+    background: var(--marvel-red);
+}
+
+.news-header .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    letter-spacing: 4px;
+    color: white;
+}
+
+/* Grid: 3 columns, first card spans 2 rows */
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: auto;
+    gap: 1.5rem;
+}
+
+.news-card {
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.news-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--card-accent);
+    transition: height 0.4s ease;
+}
+
+.news-card:hover::before {
+    height: 100%;
+}
+
+.news-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(20, 20, 20, 0.9);
+}
+
+/* Featured card spans 2 columns */
+.news-card.featured {
+    grid-column: span 2;
+    grid-row: span 2;
+    padding: 3rem;
+}
+
+.news-card.featured .news-title {
+    font-size: 2.5rem;
+}
+
+.news-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.news-category {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+}
+
+.news-date {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 1px;
+}
+
+.news-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: white;
+    line-height: 1.3;
+    transition: color 0.3s;
+}
+
+.news-card:hover .news-title {
+    color: var(--card-accent);
+}
+
+.news-excerpt {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.5;
+}
+
+.news-read-more {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 0.3s, gap 0.3s;
+}
+
+.news-card:hover .news-read-more {
+    color: var(--card-accent);
+    gap: 12px;
+}
+
+@media (max-width: 1024px) {
+    .news-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .news-card.featured {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+}

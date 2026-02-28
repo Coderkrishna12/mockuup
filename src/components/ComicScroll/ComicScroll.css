@@ -1,0 +1,204 @@
+/* ComicScroll V3 — Cinematic Panel Stack */
+
+.comic-v3 {
+    padding: 8rem 0;
+    background: #050505;
+    position: relative;
+    overflow: hidden;
+}
+
+.comic-header {
+    margin-bottom: 4rem;
+}
+
+.comic-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.comic-badge .badge-line {
+    width: 40px;
+    height: 2px;
+    background: var(--marvel-red);
+}
+
+.comic-header .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    letter-spacing: 4px;
+    color: white;
+}
+
+/* Panel Stack Layout */
+.comic-panels-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.comic-panel-v3 {
+    position: relative;
+    width: 100%;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(80px);
+    transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.comic-panel-v3.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Background */
+.panel-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+/* Character Render */
+.panel-character {
+    position: absolute;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+.align-left .panel-character {
+    right: 5%;
+    justify-content: flex-end;
+}
+
+.align-right .panel-character {
+    left: 5%;
+    justify-content: flex-start;
+}
+
+.align-center .panel-character {
+    left: 50%;
+    transform: translateX(-50%);
+    justify-content: center;
+}
+
+.panel-char-img {
+    max-height: 90%;
+    max-width: 500px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.8)) saturate(0.9);
+    transition: filter 0.5s ease;
+}
+
+.comic-panel-v3.is-revealed .panel-char-img {
+    filter: drop-shadow(0 0 60px rgba(232, 0, 45, 0.2)) saturate(1.1);
+}
+
+/* Content Text Block */
+.panel-content {
+    position: relative;
+    z-index: 2;
+    max-width: 500px;
+    padding: 4rem 5%;
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s;
+}
+
+.comic-panel-v3.is-revealed .panel-content {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.align-right .panel-content {
+    margin-left: auto;
+    transform: translateX(40px);
+}
+
+.align-center .panel-content {
+    margin: 0 auto;
+    text-align: center;
+    transform: translateY(30px);
+}
+
+.comic-panel-v3.is-revealed.align-right .panel-content {
+    transform: translateX(0);
+}
+
+.comic-panel-v3.is-revealed.align-center .panel-content {
+    transform: translateY(0);
+}
+
+.panel-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.panel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    letter-spacing: 3px;
+    color: white;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+.panel-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.panel-accent {
+    width: 60px;
+    height: 3px;
+    background: var(--marvel-red);
+    box-shadow: 0 0 10px rgba(232, 0, 45, 0.5);
+    transition: width 0.6s ease 0.8s;
+}
+
+.comic-panel-v3.is-revealed .panel-accent {
+    width: 100px;
+}
+
+.align-center .panel-accent {
+    margin: 0 auto;
+}
+
+/* Divider between panels */
+.comic-panel-v3+.comic-panel-v3 {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 1024px) {
+    .panel-character {
+        opacity: 0.3;
+    }
+
+    .panel-title {
+        font-size: 3rem;
+    }
+
+    .panel-content {
+        max-width: 100%;
+    }
+}

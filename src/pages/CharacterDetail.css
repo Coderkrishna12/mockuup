@@ -1,0 +1,346 @@
+/* Character Detail Page */
+
+.char-detail-page {
+    background: #050505;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.detail-glow {
+    position: fixed;
+    top: 0;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    filter: blur(100px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.char-detail-page .back-link {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    z-index: 100;
+}
+
+/* Hero Section */
+.detail-hero {
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+}
+
+.detail-hero-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 5%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    width: 100%;
+    gap: 2rem;
+}
+
+.detail-hero-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.detail-team-badge {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--char-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.3s both;
+}
+
+.detail-team-badge::before {
+    content: '';
+    width: 25px;
+    height: 2px;
+    background: var(--char-color);
+}
+
+.detail-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 6rem;
+    letter-spacing: 6px;
+    color: white;
+    line-height: 0.95;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+.detail-alias {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.5s both;
+}
+
+.detail-bio {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.7;
+    max-width: 480px;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.6s both;
+}
+
+/* Overall Power Ring */
+.detail-overall {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.7s both;
+}
+
+.overall-ring {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.overall-ring::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: #0a0a0a;
+}
+
+.overall-num {
+    position: relative;
+    z-index: 1;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.overall-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Hero Image */
+.detail-hero-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.detail-hero-img {
+    max-height: 70vh;
+    object-fit: contain;
+    filter: drop-shadow(0 0 60px rgba(0, 0, 0, 0.5));
+    animation: fadeInUp 0.8s ease 0.3s both;
+}
+
+/* Sections */
+.detail-section {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0;
+}
+
+.section-header-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--char-color);
+    margin-bottom: 1rem;
+}
+
+.section-header-badge .badge-line {
+    width: 40px;
+    height: 2px;
+}
+
+.detail-section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 4px;
+    color: white;
+    margin-bottom: 2.5rem;
+}
+
+/* Power Bars */
+.powers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 700px;
+}
+
+.power-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.power-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.power-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.power-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.power-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    color: white;
+    width: 30px;
+    text-align: right;
+}
+
+/* Movies Chips */
+.movies-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.movie-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.3s;
+}
+
+.movie-chip:hover {
+    border-color: var(--char-color);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.movie-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--char-color);
+}
+
+.movie-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Related Characters */
+.related-grid {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.related-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(15, 15, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 1rem;
+    min-width: 240px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.related-card:hover {
+    border-color: var(--r-color);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.related-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.related-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: white;
+    letter-spacing: 1px;
+    display: block;
+}
+
+.related-alias {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .detail-hero-content {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-hero-right {
+        display: none;
+    }
+
+    .detail-name {
+        font-size: 4rem;
+    }
+}

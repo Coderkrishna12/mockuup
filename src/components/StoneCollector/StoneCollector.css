@@ -1,0 +1,189 @@
+/* StoneCollector.css - Module 10 Specific Styles */
+
+.stone-collector-hud {
+    position: fixed;
+    bottom: 8rem;
+    /* Above the Thanos snap gauntlet */
+    right: 2rem;
+    z-index: 990;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.gauntlet-base {
+    position: relative;
+    width: 60px;
+    height: 80px;
+    background: rgba(40, 30, 10, 0.8);
+    border: 2px solid #554422;
+    border-radius: 10px 10px 30px 30px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    padding: 5px;
+}
+
+.stone-slot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #222;
+    border: 1px solid #111;
+    box-shadow: inset 0 0 5px black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.5s ease;
+}
+
+/* Positioning matching a rough gauntlet knuckle mapping */
+.stone-slot.space {
+    top: 10px;
+    left: 10px;
+}
+
+.stone-slot.reality {
+    top: 10px;
+    left: 38px;
+}
+
+.stone-slot.power {
+    top: 30px;
+    left: 10px;
+}
+
+.stone-slot.soul {
+    top: 30px;
+    left: 38px;
+}
+
+.stone-slot.time {
+    top: 50px;
+    left: 24px;
+}
+
+.stone-slot.mind {
+    top: 30px;
+    left: 24px;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    /* Mind stone in center is often larger/different */
+}
+
+.stone-gem {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--stone-color);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stone-slot.collected .stone-gem {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 10px var(--stone-color), inset 0 0 5px white;
+}
+
+/* Flash animation when just collected */
+@keyframes stoneFlash {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    50% {
+        transform: scale(2);
+        filter: brightness(2);
+        box-shadow: 0 0 30px var(--stone-color);
+    }
+
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+.stone-slot.recent-flash .stone-gem {
+    animation: stoneFlash 1s ease;
+}
+
+.stone-notification {
+    position: absolute;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translate(20px, -50%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+}
+
+/* All 6 Effect */
+.stone-collector-hud.gauntlet-complete .gauntlet-base {
+    border-color: #FFD700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    animation: gauntletVibrate 0.1s infinite;
+}
+
+@keyframes gauntletVibrate {
+    0% {
+        transform: translate(1px, 1px);
+    }
+
+    50% {
+        transform: translate(-1px, -1px);
+    }
+
+    100% {
+        transform: translate(1px, -1px);
+    }
+}
+
+.gauntlet-power-surge {
+    position: absolute;
+    inset: -10px;
+    border-radius: inherit;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    animation: surgePulse 2s ease-in-out infinite;
+}
+
+@keyframes surgePulse {
+    0% {
+        opacity: 0.2;
+        transform: scale(0.9);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+
+    100% {
+        opacity: 0.2;
+        transform: scale(0.9);
+    }
+}

@@ -1,0 +1,72 @@
+/* KineticType.css - Module 13 Styles */
+
+.kinetic-section {
+    width: 100%;
+    height: 200vh;
+    /* Extremely tall to allow scrolling through the 3 quotes */
+    background: var(--bg-dark);
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.kinetic-quote {
+    position: sticky;
+    top: 40vh;
+    text-align: center;
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    font-size: 8rem;
+    letter-spacing: 5px;
+    line-height: 1;
+    color: white;
+    margin-bottom: 50vh;
+    /* Space between quotes */
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.kinetic-char {
+    display: inline-block;
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(3);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.space {
+    display: inline-block;
+    width: 1rem;
+}
+
+/* On Intersection Trigger */
+.kinetic-quote.animate .kinetic-char {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0) scale(1);
+}
+
+/* The Glowing Word effect kicks in after the characters assemble */
+@keyframes finalGlowPulse {
+
+    0%,
+    100% {
+        text-shadow: 0 0 10px var(--marvel-red);
+    }
+
+    50% {
+        text-shadow: 0 0 30px var(--marvel-red), 0 0 50px var(--marvel-red);
+        color: transparent;
+    }
+}
+
+.kinetic-quote.animate .glow-target {
+    animation: finalGlowPulse 2s ease-in-out infinite 1.5s;
+    /* Delay until assembly finishes */
+    color: var(--marvel-red);
+    transition: color 1s ease 1s;
+}
+
+@media (max-width: 768px) {
+    .kinetic-quote {
+        font-size: 4rem;
+    }
+}

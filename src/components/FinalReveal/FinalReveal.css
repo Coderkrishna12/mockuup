@@ -1,0 +1,152 @@
+/* FinalReveal.css - Module 15 Styles */
+
+.final-reveal-section {
+    position: relative;
+    height: 150vh;
+    /* Extra tall to allow scroll-based parallax */
+    background: black;
+    color: white;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.reveal-content {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Base styling for the pseudo-A logo */
+.avengers-logo-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform-origin: center center;
+    will-change: transform, opacity;
+    z-index: 2;
+}
+
+.avengers-a {
+    position: relative;
+    width: 150px;
+    height: 200px;
+}
+
+.a-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 250px;
+    border: 15px solid var(--marvel-red);
+    border-radius: 50%;
+    border-right-color: transparent;
+    /* Opening on the right */
+    transform: translate(-50%, -50%) rotate(-15deg);
+}
+
+.a-left {
+    position: absolute;
+    top: 0;
+    left: 40px;
+    width: 30px;
+    height: 220px;
+    background: var(--marvel-red);
+    transform: skewX(-15deg);
+}
+
+.a-right {
+    position: absolute;
+    top: 0;
+    right: 40px;
+    width: 30px;
+    height: 240px;
+    background: var(--marvel-red);
+    transform: skewX(15deg);
+    border-bottom: 25px solid transparent;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 80%);
+}
+
+.a-cross {
+    position: absolute;
+    top: 120px;
+    left: 20px;
+    width: 140px;
+    height: 30px;
+    background: var(--marvel-red);
+    transform: skewX(-5deg);
+}
+
+.reveal-text {
+    text-align: center;
+    margin-top: 4rem;
+    opacity: 0;
+    transform: translateY(50px);
+    will-change: transform, opacity;
+    z-index: 3;
+}
+
+.reveal-text h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    letter-spacing: 10px;
+    margin-bottom: 1rem;
+    text-shadow: 0 5px 20px rgba(232, 0, 45, 0.5);
+    background: linear-gradient(to bottom, #ffffff, #aaaaaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.reveal-text p {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    letter-spacing: 4px;
+    margin-bottom: 2rem;
+}
+
+.credits {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.footer-bottom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 1.5rem;
+    text-align: center;
+    background: #050505;
+    border-top: 1px solid #111;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    color: #444;
+    letter-spacing: 1px;
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .avengers-logo-container {
+        transform: scale(0.6) !important;
+        /* Force smaller on mobile regardless of scroll */
+    }
+
+    .reveal-text h2 {
+        font-size: 3rem;
+        letter-spacing: 5px;
+    }
+}

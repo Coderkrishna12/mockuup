@@ -1,0 +1,236 @@
+/* Quiz.css - Module 9 Specific Styles */
+
+.quiz-section {
+    padding: 8rem 0;
+    background: var(--bg-dark);
+    position: relative;
+    z-index: 10;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.quiz-container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Intro State */
+.quiz-intro {
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.quiz-intro h2 {
+    font-size: 3.5rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.quiz-intro p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+/* Question State */
+.quiz-question-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 3rem;
+    animation: slideUp 0.5s ease;
+}
+
+.quiz-progress {
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--marvel-red);
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.question-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 2rem;
+    line-height: 1.2;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.quiz-option-btn {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1.5rem;
+    color: white;
+    font-size: 1.2rem;
+    text-align: left;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.quiz-option-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--marvel-red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    z-index: 0;
+}
+
+.quiz-option-btn:hover {
+    border-color: var(--marvel-red);
+    padding-left: 2rem;
+}
+
+.quiz-option-btn:hover::after {
+    transform: scaleX(1);
+}
+
+.quiz-option-btn:hover {
+    color: white;
+}
+
+.quiz-option-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+/* Result Reveal */
+.quiz-result-reveal {
+    animation: clipReveal 1s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes clipReveal {
+    0% {
+        clip-path: inset(50% 50% 50% 50%);
+        opacity: 0;
+    }
+
+    100% {
+        clip-path: inset(0 0 0 0);
+        opacity: 1;
+    }
+}
+
+.result-card {
+    text-align: center;
+    padding: 4rem;
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.9), rgba(0, 0, 0, 0.95));
+    border: 1px solid var(--result-color);
+    border-radius: 12px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.result-card h3 {
+    color: var(--text-muted);
+    font-size: 1.5rem;
+}
+
+.result-hero-name {
+    font-size: 6rem;
+    line-height: 1;
+    margin: 1rem 0;
+    text-shadow: 0 0 20px var(--result-color);
+}
+
+.result-quote {
+    font-size: 1.5rem;
+    font-style: italic;
+    color: white;
+    margin-bottom: 3rem;
+}
+
+.result-stats {
+    max-width: 400px;
+    margin: 0 auto 3rem auto;
+}
+
+.stat-bar {
+    width: 100%;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.stat-fill {
+    height: 100%;
+    transition: width 1s ease 1s;
+    /* Delayed fill */
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+}
+
+.result-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+    padding: 1rem 2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--marvel-red);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #B00020;
+    box-shadow: 0 0 15px var(--marvel-red);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:hover {
+    border-color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+
+    .quiz-question-box,
+    .result-card {
+        padding: 2rem;
+    }
+
+    .question-text {
+        font-size: 2rem;
+    }
+
+    .result-hero-name {
+        font-size: 4rem;
+    }
+}

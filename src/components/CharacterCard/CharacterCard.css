@@ -1,0 +1,319 @@
+/* Character Card + Characters Page Styles */
+
+.characters-page {
+    background: #050505;
+    min-height: 100vh;
+}
+
+/* Header */
+.chars-page-header {
+    padding: 6rem 0 4rem;
+    background: linear-gradient(to bottom, #0a0a0a, #050505);
+    position: relative;
+}
+
+.back-link {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+    z-index: 10;
+}
+
+.back-link:hover {
+    color: var(--marvel-red);
+}
+
+.chars-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.chars-badge .badge-line {
+    width: 40px;
+    height: 2px;
+    background: var(--marvel-red);
+}
+
+.chars-page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    letter-spacing: 6px;
+    color: white;
+}
+
+.chars-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 0.5rem;
+}
+
+/* Filters */
+.chars-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 0 3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 0.8rem 1.2rem;
+    min-width: 300px;
+    transition: border-color 0.3s;
+}
+
+.search-box:focus-within {
+    border-color: var(--marvel-red);
+}
+
+.search-box svg {
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.search-input {
+    background: none;
+    border: none;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    width: 100%;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.team-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.team-btn {
+    padding: 0.5rem 1.2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.team-btn:hover {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.team-btn.active {
+    background: var(--marvel-red);
+    border-color: var(--marvel-red);
+    color: white;
+}
+
+/* Grid */
+.chars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding-bottom: 6rem;
+}
+
+/* Character Card */
+.char-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.char-card {
+    position: relative;
+    height: 380px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.char-card:hover {
+    border-color: var(--char-color);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px color-mix(in srgb, var(--char-color) 20%, transparent);
+}
+
+/* Image */
+.char-card-img-wrap {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 85%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.char-card-img {
+    max-height: 100%;
+    max-width: 90%;
+    object-fit: contain;
+    object-position: bottom;
+    filter: saturate(0.6) brightness(0.7);
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform: scale(0.9) translateY(10px);
+}
+
+.char-card:hover .char-card-img {
+    filter: saturate(1.1) brightness(1);
+    transform: scale(1) translateY(0);
+}
+
+/* Overlay */
+.char-card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.5) 80%, transparent);
+    z-index: 2;
+    transform: translateY(40px);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.char-card:hover .char-card-overlay {
+    transform: translateY(0);
+}
+
+.char-card-team {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--char-color);
+}
+
+.char-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    color: white;
+    margin: 0.25rem 0;
+}
+
+.char-card-alias {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 0.75rem;
+}
+
+/* Mini Stats */
+.char-card-mini-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease 0.15s;
+}
+
+.char-card:hover .char-card-mini-stats {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mini-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mini-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    width: 28px;
+}
+
+.mini-bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.mini-fill {
+    height: 100%;
+    background: var(--char-color);
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s;
+}
+
+/* Empty State */
+.chars-empty {
+    text-align: center;
+    padding: 6rem 0;
+}
+
+.chars-empty h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 4px;
+}
+
+.chars-empty p {
+    font-family: 'Inter', sans-serif;
+    color: rgba(255, 255, 255, 0.2);
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .chars-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        min-width: auto;
+    }
+
+    .chars-page-title {
+        font-size: 3.5rem;
+    }
+}

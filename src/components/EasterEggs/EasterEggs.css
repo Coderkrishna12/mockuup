@@ -1,0 +1,125 @@
+/* EasterEggs.css - Module 11 & 12 Styles */
+
+/* Audio Controller */
+.audio-controller {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    z-index: 1000;
+}
+
+.audio-btn {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+.audio-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--marvel-red);
+}
+
+/* Thanos Typing HUD */
+.thanos-typing-hud {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    gap: 0.5rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 0.5rem 2rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.thanos-typing-hud span {
+    color: #333;
+    transition: all 0.2s;
+}
+
+.thanos-typing-hud span.active {
+    color: white;
+    text-shadow: 0 0 15px var(--stone-color);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+body.thanos-typed {
+    animation: typingSnap 2s ease forwards;
+}
+
+@keyframes typingSnap {
+    0% {
+        filter: contrast(1) brightness(1);
+    }
+
+    10% {
+        filter: contrast(2) brightness(5) invert(1);
+        background: white;
+    }
+
+    20% {
+        filter: contrast(1) brightness(0.2);
+    }
+
+    100% {
+        filter: contrast(1) brightness(1);
+    }
+}
+
+/* Stan Lee Modal */
+.stan-lee-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s;
+}
+
+.stan-lee-content {
+    background: white;
+    color: black;
+    padding: 3rem;
+    border: 8px solid black;
+    box-shadow: 20px 20px 0 black;
+    text-align: center;
+    max-width: 500px;
+    transform: rotate(-2deg);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stan-lee-avatar {
+    font-family: 'Bangers', cursive;
+    font-size: 4rem;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.stan-lee-content p {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+}

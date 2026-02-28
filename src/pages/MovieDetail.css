@@ -1,0 +1,327 @@
+/* Movie Detail Page */
+
+.movie-detail-page {
+    background: #050505;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.movie-detail-glow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.movie-detail-page .back-link {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    z-index: 100;
+}
+
+/* Hero */
+.movie-hero {
+    position: relative;
+    z-index: 1;
+    padding: 8rem 0 4rem;
+}
+
+.movie-hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.movie-hero-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.movie-hero-tags {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.movie-hero-phase {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--movie-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.movie-hero-phase::before {
+    content: '';
+    width: 25px;
+    height: 2px;
+    background: var(--movie-color);
+}
+
+.movie-hero-year {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.movie-hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    letter-spacing: 5px;
+    color: white;
+    line-height: 0.95;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.3s both;
+}
+
+.movie-hero-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+.hero-rating {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: #F0C040;
+    font-size: 1.1rem;
+}
+
+.hero-divider {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.hero-runtime {
+    font-family: 'Inter', sans-serif;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.movie-hero-synopsis {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.7;
+    max-width: 520px;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.5s both;
+}
+
+.movie-hero-actions {
+    opacity: 0;
+    animation: fadeInUp 0.6s ease 0.6s both;
+}
+
+.btn-watch-trailer {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--movie-color);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.btn-watch-trailer:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--movie-color) 40%, transparent);
+}
+
+/* Poster Placeholder */
+.movie-poster {
+    width: 100%;
+    aspect-ratio: 2/3;
+    max-width: 350px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease 0.3s both;
+}
+
+.poster-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.poster-year {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.1);
+}
+
+/* Sections */
+.movie-section {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0;
+}
+
+.movie-section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 4px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+/* Cast */
+.cast-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.cast-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 15, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem 0.5rem 0.5rem;
+    transition: all 0.3s;
+}
+
+.cast-chip:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(20, 20, 20, 0.8);
+}
+
+.cast-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--movie-color), color-mix(in srgb, var(--movie-color) 50%, black));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.cast-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Trailer Modal */
+.trailer-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.trailer-modal {
+    position: relative;
+    width: 90vw;
+    max-width: 960px;
+    aspect-ratio: 16/9;
+    background: black;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.trailer-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    z-index: 10;
+    transition: color 0.3s;
+}
+
+.trailer-close:hover {
+    color: var(--marvel-red);
+}
+
+.trailer-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .movie-hero-content {
+        grid-template-columns: 1fr;
+    }
+
+    .movie-hero-right {
+        display: none;
+    }
+
+    .movie-hero-title {
+        font-size: 3.5rem;
+    }
+}

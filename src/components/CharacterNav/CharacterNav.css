@@ -1,0 +1,204 @@
+/* CharacterNav V3 — Premium Expanding Cards */
+
+.charsel-v3 {
+    position: relative;
+    padding: 8rem 2rem;
+    background: #050505;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+.charsel-glow-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, var(--glow-color) 0%, transparent 60%);
+    opacity: 0.1;
+    filter: blur(80px);
+    pointer-events: none;
+    transition: background 0.6s ease;
+    z-index: 0;
+}
+
+.charsel-header {
+    position: relative;
+    z-index: 10;
+    margin-bottom: 4rem;
+}
+
+.charsel-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+    margin-bottom: 1rem;
+}
+
+.charsel-badge .badge-line {
+    width: 40px;
+    height: 2px;
+    background: var(--marvel-red);
+}
+
+.charsel-header .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    letter-spacing: 4px;
+    color: white;
+}
+
+/* Premium Expanding Gallery */
+.charsel-grid {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 1rem;
+    height: 550px;
+}
+
+.charsel-card {
+    position: relative;
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: flex 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.3s;
+}
+
+.charsel-card:hover,
+.charsel-card.active {
+    flex: 3;
+    border-color: var(--char-color);
+}
+
+/* Character Image */
+.charsel-img-wrap {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.charsel-img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: bottom;
+    filter: saturate(0.7) brightness(0.8);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.85) translateY(20px);
+}
+
+.charsel-card:hover .charsel-img,
+.charsel-card.active .charsel-img {
+    filter: saturate(1.1) brightness(1);
+    transform: scale(1) translateY(0);
+}
+
+/* Bottom Info Gradient */
+.charsel-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.charsel-card:hover .charsel-info,
+.charsel-card.active .charsel-info {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.charsel-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 3px;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.charsel-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: var(--char-color);
+    letter-spacing: 2px;
+    margin-bottom: 0.75rem;
+}
+
+.meta-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--char-color);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--char-color);
+}
+
+.charsel-quote {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+    border-left: 2px solid var(--char-color);
+    padding-left: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.charsel-action {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: white;
+}
+
+.charsel-card.active .charsel-action {
+    color: var(--char-color);
+}
+
+@media (max-width: 1024px) {
+    .charsel-grid {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .charsel-card {
+        height: 200px;
+        flex: none !important;
+    }
+
+    .charsel-card:hover,
+    .charsel-card.active {
+        height: 350px;
+    }
+
+    .charsel-info {
+        opacity: 1;
+        transform: none;
+    }
+}

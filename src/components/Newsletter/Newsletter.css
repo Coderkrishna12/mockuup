@@ -1,0 +1,111 @@
+/* Newsletter — Glassmorphic Signup */
+
+.newsletter-section {
+    position: relative;
+    padding: 6rem 0;
+    background: #0a0a0a;
+    overflow: hidden;
+}
+
+.newsletter-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(circle, rgba(232, 0, 45, 0.1) 0%, transparent 60%);
+    filter: blur(60px);
+    pointer-events: none;
+}
+
+.newsletter-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    background: rgba(15, 15, 15, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 4rem;
+}
+
+.newsletter-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 4px;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.newsletter-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.6;
+}
+
+.input-wrapper {
+    display: flex;
+    gap: 0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--marvel-red);
+}
+
+.newsletter-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: white;
+    padding: 1rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    outline: none;
+}
+
+.newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.newsletter-btn {
+    padding: 1rem 2rem;
+    background: var(--marvel-red);
+    color: white;
+    border: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    transition: background 0.3s, padding 0.3s;
+    white-space: nowrap;
+}
+
+.newsletter-btn:hover {
+    background: #ff1a3d;
+}
+
+.newsletter-btn.submitted {
+    background: #14B8A6;
+    padding: 1rem 2.5rem;
+}
+
+.newsletter-legal {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.25);
+    margin-top: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+    .newsletter-box {
+        grid-template-columns: 1fr;
+        padding: 2rem;
+        gap: 2rem;
+    }
+}

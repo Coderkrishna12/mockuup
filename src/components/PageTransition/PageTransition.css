@@ -1,0 +1,74 @@
+/* Page Transition — Curtain Wipe */
+
+.page-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========== Curtain ========== */
+.page-curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 8000;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.curtain-bg {
+    position: absolute;
+    inset: 0;
+    background: #050505;
+    transform: translateX(-101%);
+    transition: none;
+}
+
+.curtain-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    opacity: 0;
+    transition: none;
+}
+
+.curtain-m {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 6rem;
+    color: var(--marvel-red);
+    letter-spacing: 8px;
+    text-shadow: 0 0 40px rgba(232, 0, 45, 0.4);
+}
+
+/* ========== Phase: ENTER — Curtain slides in from left ========== */
+.page-curtain.enter .curtain-bg {
+    transform: translateX(0);
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.page-curtain.enter .curtain-logo {
+    opacity: 1;
+    transition: opacity 0.3s ease 0.25s;
+}
+
+/* ========== Phase: EXIT — Curtain slides out to right ========== */
+.page-curtain.exit .curtain-bg {
+    transform: translateX(101%);
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.page-curtain.exit .curtain-logo {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+/* ========== Phase: IDLE — Reset offscreen ========== */
+.page-curtain.idle .curtain-bg {
+    transform: translateX(-101%);
+    transition: none;
+}
+
+.page-curtain.idle .curtain-logo {
+    opacity: 0;
+    transition: none;
+}

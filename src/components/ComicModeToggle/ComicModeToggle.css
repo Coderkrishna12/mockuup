@@ -1,0 +1,157 @@
+/* ComicModeToggle.css - Module 7 Specific Styles/Overrides */
+
+.comic-toggle-container {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 1000;
+}
+
+.comic-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.comic-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--marvel-red);
+}
+
+.comic-toggle-slider {
+    width: 40px;
+    height: 20px;
+    background: #333;
+    border-radius: 20px;
+    position: relative;
+    transition: background 0.3s;
+}
+
+.comic-toggle-slider::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.comic-toggle-container.active .comic-toggle-slider {
+    background: var(--marvel-red);
+}
+
+.comic-toggle-container.active .comic-toggle-slider::after {
+    transform: translateX(20px);
+}
+
+.comic-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+/* =========================================================
+   GLOBAL COMIC MODE OVERRIDES 
+   (Applied when <body> has .comic-mode class)
+   ========================================================= */
+
+body.comic-mode {
+    /* Halftone dot pattern background */
+    background-color: #f4f4f4 !important;
+    background-image: radial-gradient(#d0d0d0 15%, transparent 16%), radial-gradient(#d0d0d0 15%, transparent 16%) !important;
+    background-size: 20px 20px !important;
+    background-position: 0 0, 10px 10px !important;
+    color: #111 !important;
+    font-family: 'Bangers', cursive !important;
+}
+
+body.comic-mode::before {
+    /* Kirby crackle overlay */
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(255, 200, 0, 0.1) 80%);
+    pointer-events: none;
+    z-index: 999;
+}
+
+.comic-mode h1,
+.comic-mode h2,
+.comic-mode h3 {
+    font-family: 'Bangers', cursive;
+    text-shadow: 2px 2px 0px white, 4px 4px 0px black;
+    letter-spacing: 3px;
+    color: var(--marvel-red);
+}
+
+.comic-mode .character-card .char-card-inner {
+    background: white;
+    border: 4px solid black;
+    box-shadow: 8px 8px 0 black;
+    border-radius: 0;
+}
+
+.comic-mode .char-overlay {
+    background: white;
+    color: black;
+    border: 4px solid black;
+    /* Speech bubble shape */
+    clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%);
+}
+
+.comic-mode .char-quote {
+    font-family: 'Bangers', cursive;
+    color: black;
+    font-size: 1.5rem;
+    font-style: normal;
+}
+
+.comic-mode .comic-image-placeholder {
+    border: 6px solid black;
+    box-shadow: 10px 10px 0 black;
+    filter: contrast(1.5) saturate(0.8) brightness(1.2) sepia(0.2);
+}
+
+.comic-mode .timeline-card {
+    background: white;
+    border: 4px solid black;
+    box-shadow: 6px 6px 0 black;
+    color: black;
+}
+
+.comic-mode .film-title {
+    color: black;
+}
+
+.comic-mode .film-desc {
+    color: #333;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-weight: bold;
+}
+
+.comic-mode .char-badge {
+    background: black;
+    color: white;
+    border-radius: 0;
+}
+
+.comic-mode .uni-label {
+    background: white;
+    border: 4px solid black;
+    box-shadow: 4px 4px 0 black;
+}
+
+.comic-mode .uni-label p {
+    color: black;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-weight: bold;
+}
