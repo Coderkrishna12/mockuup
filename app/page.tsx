@@ -10,8 +10,8 @@ import { ArrowRight, Film, Users, Clock, Globe } from "lucide-react";
 
 import HeroSection from "@/components/HeroSection";
 import MovieCard from "@/components/MovieCard";
+import CharacterShowcase from "@/components/CharacterShowcase";
 import { movies } from "@/data/movies";
-import { characters } from "@/data/characters";
 import { useReducedMotion } from "@/lib/hooks";
 import { staggerContainer, staggerItem, fadeInUp } from "@/lib/animations";
 
@@ -243,61 +243,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════════════ CHARACTER HIGHLIGHTS ═══════════════════ */}
-      <section className="scroll-section relative z-10 py-24 md:py-32 bg-gradient-to-b from-transparent via-[#0a0000] to-transparent">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
-            <div>
-              <h2 className="font-heading text-4xl md:text-6xl text-white tracking-wider mb-2">
-                EARTH&apos;S MIGHTIEST <span className="text-marvel-red">HEROES</span>
-              </h2>
-              <p className="text-white/40">Hover to reveal character details</p>
-            </div>
-            <Link
-              href="/characters"
-              className="mt-4 md:mt-0 inline-flex items-center gap-2 text-sm text-marvel-red hover:text-white transition-colors"
-            >
-              View All Characters <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: "-50px" }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
-          >
-            {characters.slice(0, 12).map((character, i) => (
-              <motion.div key={character.id} variants={staggerItem}>
-                <Link
-                  href={`/characters/${character.id}`}
-                  className="group block relative aspect-[3/4] rounded-lg overflow-hidden"
-                >
-                  <Image
-                    src={character.imageUrl}
-                    alt={character.name}
-                    fill
-                    unoptimized={true}
-                    onError={(e) => {
-                      e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg";
-                      e.currentTarget.className = "object-contain p-4 opacity-50 transition-transform duration-500 group-hover:scale-110";
-                    }}
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                  <div className="absolute inset-0 border border-transparent group-hover:border-marvel-red/40 rounded-lg transition-colors" />
-                  <div className="absolute bottom-2 left-2 right-2">
-                    <p className="font-heading text-lg text-white tracking-wider">{character.name}</p>
-                    <p className="text-[10px] text-white/40">{character.alias}</p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      {/* ═══════════════════ CHARACTER SHOWCASE (from Home Page B) ═══════════════════ */}
+      <CharacterShowcase />
 
       {/* ═══════════════════ CTA SECTION ═══════════════════ */}
       <section className="scroll-section relative z-10 py-24 md:py-32">
