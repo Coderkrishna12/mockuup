@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export default function LoadingScreen() {
     const [isLoading, setIsLoading] = useState(true);
@@ -87,14 +88,20 @@ export default function LoadingScreen() {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                         className="relative z-10 flex flex-col items-center"
                     >
-                        {/* Marvel M */}
+                        {/* Marvel M Icon */}
                         <motion.div
                             initial={{ scale: 0.3, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
-                            className="w-20 h-20 bg-marvel-red rounded-lg flex items-center justify-center mb-6 glow-red-intense"
+                            className="mb-6 drop-shadow-[0_0_25px_rgba(237,29,36,0.6)]"
                         >
-                            <span className="font-heading text-4xl text-white">M</span>
+                            <Image
+                                src="/M_icon.png"
+                                alt="Marvel Icon"
+                                width={96}
+                                height={96}
+                                className="h-24 w-auto object-contain rounded-xl"
+                            />
                         </motion.div>
 
                         {/* Title */}

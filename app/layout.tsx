@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     description: "An immersive journey through the Marvel Cinematic Universe.",
     type: "website",
   },
+  icons: {
+    icon: "/M_icon.png",
+  },
 };
 
 import { CursorProvider } from "@/lib/CursorContext";
